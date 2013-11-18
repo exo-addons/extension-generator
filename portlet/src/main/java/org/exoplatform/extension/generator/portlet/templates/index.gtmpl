@@ -1,0 +1,110 @@
+<%
+  public String computeContent(def tmpNodes, def name, def title, def parentPath) {
+    String content = "<li class='node'>";
+    
+    content += "<span class='uiCheckbox '>"
+    content += "<input type='checkbox' class='list-checkbox parent' name='selectedResources' id='"+parentPath+"' value='"+parentPath+"'>";
+    content += "<span></span>";
+    content += "</span>";
+    
+    def parentNodeClass = "expandIcon";
+    def parentLabelFor = "tree_"+parentPath;
+    if(tmpNodes.size() == 0 || (tmpNodes.size() == 1 && tmpNodes.iterator().next().getPath().equals(parentPath))) {
+      parentNodeClass = "emptyIcon";
+      parentLabelFor = parentPath;
+    } else {
+      content += "<input type='checkbox' class='tree-checkbox' id='tree_"+parentPath+"'>";
+    }
+
+  	content += "<div class='"+parentNodeClass+" '>";
+  	content += "   <div>";
+  	content += "        <a data-placement='bottom' rel='tooltip' data-original-title='mobile'>";
+  	content += "         <i class='uiIcon16x16FolderDefault uiIcon16x16exo_portalFolder' title='"+title+"'></i>";
+  	content += "         <label class='nodeName Clickable' for='"+parentLabelFor+"'>"+title+"</label>";
+  	content += "		</a>";
+  	content += "	</div>";
+  	content += "</div>";
+
+    if(parentNodeClass == "expandIcon") {
+
+	  content += "<ul class='nodeGroup'>";
+	  content += "	<li class='node uiSearchInput'>";
+
+      content += "<table cellpadding='0' cellspacing='0' border='0' class='display dataTable tree_datatable' id='"+name+"'>";
+      content += "<tbody>";
+      tmpNodes.each { node ->
+        if(!node.getPath().equals(parentPath)) {
+          content += "<tr class='rowTable gradeA'>";
+          content += " <td class='gradeA'>";
+          content += "  <span class='uiCheckbox '>";
+          content += "    <input type='checkbox' class='list-checkbox leaf' name='selectedResources' id='"+node.getPath()+"' value='"+node.getPath()+"'>";
+          content += "    <span></span>";
+          content += "  </span>";
+          content += "  <a data-placement='bottom' rel='tooltip'>";
+          content += "    <i class='uiIconFileMini uiIconLightgray' title='"+node.getDescription()+"'></i>";
+          content += "    <label title='"+node.getDescription()+"' class='leaf nodeName Clickable' for='"+node.getPath()+"'>"+node.getText()+"</label>";
+          content += "  </a>";
+          content += " </td>";
+          content += "</tr>";
+        }
+      }
+      content += "</tbody>";
+      content += "</table>";
+      content += "</li>";
+      content += "</ul>";
+      content += "</li>";
+    } else {
+		
+	}
+    return content;
+  }
+%>
+<div id="extension-genrator-portlet" class="wrapper">
+	<div class="container-fluid">
+		<div class='uiBox'>
+			<div class='uiContentBox'>
+				<h3 class="heading">Configuration Extension Generator</h3>
+				<div class="row-fluid generator-portlet-container">
+					<div class="span4 leftBar">
+						<div class="uiBox">
+							<h6 class="title">
+							  <span class="content">Configuration</span>
+							  <div class="title-commands">
+								  <a id="expandAllTree" title="Expand all" href="#"><img src="/eXoResources/skin/images/Tree/uiIconTreePlus.gif"></a>
+								  <a id="collapseAllTree" title="Collapse all" href="#"><img src="/eXoResources/skin/images/Tree/uiIconTreeMinus.gif"></a>
+								  <input type="checkbox" id="controlAll" title="Control All Checkboxes"/>
+							  </div>
+							</h6>
+							<div class="uiContentBox">
+								<div class="uiTreeExplorer">
+									<ul class='nodeGroup'>
+										<%=computeContent(portalSiteNodes,"portalsites", "Portal Sites", portalSitePath)%>
+										<%=computeContent(groupSiteNodes,"groupsites", "Group Sites",groupSitePath)%>
+										<%=computeContent(userSiteNodes,"usersites", "User Sites",userSitePath)%>
+										<%=computeContent(siteContentNodes,"contentsites", "Site JCR Conents",siteContentPath)%>
+										<%=computeContent(applicationCLVTemplatesNodes,"clv_templates", "Content List Templates",applicationCLVTemplatesPath)%>
+										<%=computeContent(applicationSearchTemplatesNodes,"search_templates", "Search Templates",applicationSearchTemplatesPath)%>
+										<%=computeContent(documentTypeTemplatesNodes,"document_templates", "Document Type templates",documentTypeTemplatesPath)%>
+										<%=computeContent(metadataTemplatesNodes,"metadata_templates", "Metadata Templates",metadataTemplatesPath)%>
+										<%=computeContent(taxonomyNodes,"taxonomy", "Taxonomy",taxonomyPath)%>
+										<%=computeContent(queryNodes,"jcrquery", "JCR Query",queryPath)%>
+										<%=computeContent(driveNodes,"drives", "Drives",drivePath)%>
+										<%=computeContent(scriptNodes,"scripts", "Programming Groovy Script",scriptPath)%>
+										<%=computeContent(actionNodeTypeNodes,"actions", "Action JCR NodeType",actionNodeTypePath)%>
+										<%=computeContent(nodeTypeNodes,"nodetypes", "JCR NodeType",nodeTypePath)%>
+										<%=computeContent(registryNodes,"registry", "Application Registry",registryPath)%>
+										<%=computeContent(viewTemplateNodes,"viewTemplate", "Sites Explorer View Templates",viewTemplatePath)%>
+										<%=computeContent(viewConfigurationNodes,"viewConfiguration", "Sites Explorer View Configuration",viewConfigurationPath)%>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="span8" id="exportImportForm">
+						#{include path=form.gtmpl}#{/include}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

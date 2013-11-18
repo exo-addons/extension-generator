@@ -1,0 +1,217 @@
+@import "../css/jquery.dataTables.css";
+.generator-portlet-container {
+	height: 630px;
+}
+
+.wrapper > .container-fluid {
+	padding-top: 20px;
+	max-width: 1144px;
+	margin: 0 auto;
+}
+
+.heading {
+	text-align: center;
+	margin: 0 0 15px 0
+}
+
+.uiBox {
+	margin: 0px;
+	padding: 0px;
+	ul , li {
+		padding: 0;
+		margin: 0;
+		list-style: none;
+	}
+
+	a {
+		color: #00f;
+		text-decoration: none;
+	}
+
+	.title {
+		height: 17px;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+
+	list-checkbox {
+		vertical-align: initial;
+	}
+
+	input.list-checkbox:indeterminate {
+		opacity: 0.5;
+	}
+
+	.tree-checkbox {
+		opacity: 0;
+		display: none;
+	}
+
+	.tree-checkbox + ul {
+		margin: 0 0 0 22px;
+	}
+
+	.tree-checkbox ~ ul {
+		display: none;
+	}
+
+	.tree-checkbox:disabled + label {
+		cursor: default;
+		opacity: .6;
+	}
+
+	.tree-checkbox:checked:not(:disabled) ~ ul {
+		display: block;
+	}
+
+	.dataTables_scrollBody {
+		border: 1px solid #cbcbcb;
+		border-radius: 3px;
+	}
+
+	.dataTables_scrollBody .tree_datatable {
+		border: none;
+	}
+
+	.dataTable .odd {
+		background-color: #f0f0f0;
+	}
+
+	.expandIcon {
+		width: auto;
+		height: auto;
+		padding-left: 30px;
+		display: block;
+		text-transform: capitalize;
+	}
+
+	.tree-checkbox + .expandIcon {
+		background: transparent url("/eXoResources/skin/images/Tree/uiIconTreePlus.gif") no-repeat 17px 6px;
+	}
+
+	.tree-checkbox:checked + .expandIcon {
+		background: transparent url("/extension-generator-portlet/style/images/uiIconTreeMinus.gif") no-repeat 17px 6px;
+	}
+
+	.sorting_disabled {
+		display: none;
+	}
+
+	label {
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+		padding: 0px;
+		display: inline-block;
+	}
+
+	.dataTables_filter {
+		width: 100%;
+		label {
+			float: none;
+			width: inherit;
+			margin: 0px 0px 3px 0px;
+			padding: 0px;
+			input[type="text"] {
+				width: inherit;
+			}
+		}
+	}
+
+	.Clickable {
+		cursor: pointer;
+		white-space: nowrap;
+	}
+
+	.Clickable:hover {
+		background-color: lightsteelblue;
+	}
+}
+
+.generatorContent .SelectedContent {
+	height: 462px;
+	overflow: auto;
+}
+
+.leftBar {
+	.uiBox .uiContentBox {
+		padding: 10px;
+		overflow: auto;
+		height: 571px;
+	}
+
+	.uiTreeExplorer {
+		.uiCheckbox {
+			vertical-align: -1px;
+			margin: 1px 0 0;
+			float: left;
+			display: block;
+			width: 18px;
+			height: 18px;
+			overflow: hidden;
+		}
+
+		.emptyIcon {
+			background-position: 0px 6px;
+		}
+
+		.node {
+			width: 250px;
+			.uiCheckbox + div {
+				margin-left: 18px;
+			}
+
+			.uiSearchForm {
+				margin-left: 14px;
+				input {
+					width: 250px;
+				}
+			}
+
+			.dataTable {
+				margin-left: 14px;
+				.rowTable {
+					padding: 3px 10px;
+				}
+			}
+		}
+	}
+}
+
+.dataTableContainer {
+	margin: 0 0 25px 0;
+}
+
+.dataTable {
+	border: 1px solid #cbcbcb;
+	border-radius: 3px;
+	overflow: auto;
+	max-height: 209px;
+	.rowTable {
+		padding: 5px 10px;
+		background: white;
+	}
+}
+
+.uiBox h6.title {
+	.title-commands {
+		float: right;
+		clear: none;
+		img {
+			padding-left: 5px;
+			margin-top: -2px;
+		}
+	}
+
+	.content {
+		float: left;
+	}
+
+	input[type="checkbox"] {
+		margin-top: -1px;
+		margin-left: 6px;
+	}
+}
+
