@@ -38,7 +38,7 @@ public class SiteExplorerViewConfigurationHandler extends AbstractConfigurationH
   /**
    * {@inheritDoc}
    */
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;

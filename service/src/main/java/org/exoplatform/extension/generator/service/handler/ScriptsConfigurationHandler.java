@@ -36,7 +36,7 @@ public class ScriptsConfigurationHandler extends AbstractConfigurationHandler {
   /**
    * {@inheritDoc}
    */
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.ECM_SCRIPT_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -80,7 +80,7 @@ public class ScriptsConfigurationHandler extends AbstractConfigurationHandler {
         scripts.add(scriptResource);
         try {
           InputStream inputStream = zipFile.getInputStream(zipEntry);
-          Utils.writeZipEnry(zos, scriptConfigurationLocation, inputStream);
+          Utils.writeZipEnry(zos, scriptConfigurationLocation, extensionName, inputStream, false);
         } catch (Exception e) {
           log.error("Error while marshalling " + zipEntry.getName(), e);
         }

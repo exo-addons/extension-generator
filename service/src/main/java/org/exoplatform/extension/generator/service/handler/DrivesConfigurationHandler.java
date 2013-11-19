@@ -24,7 +24,7 @@ public class DrivesConfigurationHandler extends AbstractConfigurationHandler {
   /**
    * {@inheritDoc}
    */
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.ECM_DRIVE_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -39,7 +39,7 @@ public class DrivesConfigurationHandler extends AbstractConfigurationHandler {
       ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_DRIVE_PATH, filterDrives.toArray(new String[0]));
       ZipEntry drivesConfigurationEntry = zipFile.getEntry(DRIVE_CONFIGURATION_LOCATION_FROM_EXPORT);
       InputStream inputStream = zipFile.getInputStream(drivesConfigurationEntry);
-      Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + drivesConfigurationEntry.getName(), inputStream);
+      Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + drivesConfigurationEntry.getName(), extensionName, inputStream, false);
       configurationPaths.add(DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + drivesConfigurationEntry.getName());
       return true;
     } catch (Exception e) {

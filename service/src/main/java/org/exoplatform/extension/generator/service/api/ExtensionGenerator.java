@@ -167,33 +167,36 @@ public interface ExtensionGenerator {
 
   /**
    * Generates the WAR Extension by including seleted managed paths to export
+   * @param extensionName 
    * 
    * @param selectedResources
    * @return InputStream pointing to a ZipFile
    * @throws IOException
    */
-  InputStream generateWARExtension(Set<String> selectedResources) throws IOException;
+  InputStream generateWARExtension(String extensionName, Set<String> selectedResources) throws Exception;
 
   /**
    * Generates EAR containing WAR Extension and Activation JAR by including
    * seleted managed paths to export
+   * @param extensionName 
    * 
    * @param selectedResources
    * @return InputStream pointing to a ZipFile
    * @throws IOException
    */
-  InputStream generateExtensionEAR(Set<String> selectedResources) throws IOException;
+  InputStream generateExtensionEAR(String extensionName, Set<String> selectedResources) throws Exception;
 
   /**
    * Generates Maven Project containing modules for WAR Extension and Activation
    * JAR. This operation is done by including seleted managed paths to export.
+   * @param extensionName 
    * 
    * @param selectedResources
    *          Selected Managed Resources Paths.
    * @return InputStream pointing to a ZipFile
    * @throws IOException
    */
-  InputStream generateExtensionMavenProject(Set<String> selectedResources) throws IOException;
+  InputStream generateExtensionMavenProject(String extensionName, Set<String> selectedResources) throws Exception;
 
   /**
    * Filters subresources of parentPath. This operation retains only paths that

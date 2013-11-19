@@ -9,18 +9,20 @@
 			this.checked = false;
 		});
 	});
-	$('.title-commands #controlAll').on("change", function() {
-		var checked = $(this).attr("checked");
-		$('.uiTreeExplorer .list-checkbox.parent').each(function() {
-			this.checked = checked;
-			fireCheckBoxChange(this);
-		});
-		$('#exportImportForm').jzLoad(
-				"ExtensionGeneratorController.selectResources()", {
-					"path" : "",
-					"checked" : ""
+	$('.title-commands #controlAll').on(
+			"change",
+			function() {
+				var checked = $(this).attr("checked");
+				$('.uiTreeExplorer .list-checkbox.parent').each(function() {
+					this.checked = checked;
+					fireCheckBoxChange(this);
 				});
-	});
+				$('#exportImportForm').jzLoad(
+						"ExtensionGeneratorController.selectResources()", {
+							"path" : "",
+							"checked" : ""
+						});
+			});
 
 	$(document).ready(function() {
 		$.fn.DataTable = jQuery.fn.dataTable;
@@ -47,7 +49,7 @@
 		});
 	});
 	function fireCheckBoxChange(obj) {
-		if(!obj || !obj.id) {
+		if (!obj || !obj.id) {
 			obj = this;
 		}
 		var checkboxId = $(obj).attr("id");
@@ -98,4 +100,20 @@
 	}
 	$('#extension-genrator-portlet .list-checkbox').on("change",
 			fireCheckBoxChange);
+	window.exportProject = function() {
+		var extensionNameValue = $('#extensionName').val();
+		var archiveTypeValue = $('.archiveTypeContainer input:radio[name=archiveType]:checked').val();
+		if(!extensionNameValue || extensionNameValue == "") {
+			$('#extensionName').css("border-color", "red");
+			return;
+		}
+		var re = /[a-z|A-Z]*[-|_]*[a-z|A-Z]*/;
+		var match = extensionNameValue.match(re);
+		if (match == null || match[0] != extensionNameValue) {
+			$('#extensionName').css("border-color", "red");
+			return;
+		}
+		$('#extensionName').removeAttr("style");
+		window.location.href = $('#exportImportForm').jzURL('ExtensionGeneratorController.exportExtension') + "&extensionName=" + extensionNameValue + "&archiveType=" + archiveTypeValue;
+	}
 })($);

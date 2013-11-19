@@ -63,7 +63,7 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
    * {@inheritDoc}
    */
   @SuppressWarnings("unchecked")
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.ECM_NODETYPE_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -134,7 +134,10 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
       }
 
       String content = NodeTypeExportTask.getNodeTypeXML(nodeTypeValues);
-      Utils.writeZipEnry(zos, NODETYPE_CONFIGURATION_LOCATION, content);
+      Utils.writeZipEnry(zos, NODETYPE_CONFIGURATION_LOCATION, extensionName, content, false);
+    } catch (Exception e) {
+      log.error("Error while serializing MOP data", e);
+      return false;
     } finally {
       clearTempFiles();
     }

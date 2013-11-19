@@ -78,7 +78,7 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
    * {@inheritDoc}
    */
   @Override
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.ECM_TAXONOMY_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;

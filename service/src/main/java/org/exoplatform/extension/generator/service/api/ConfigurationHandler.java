@@ -16,7 +16,7 @@ public interface ConfigurationHandler {
    *          Set of selected managed resources path
    * @return true if some files was written in archive
    */
-  public abstract boolean writeData(ZipOutputStream zos, Collection<String> tempSelectedResources);
+  public abstract boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> tempSelectedResources);
 
   /**
    * @return list of configuration paths written in archive

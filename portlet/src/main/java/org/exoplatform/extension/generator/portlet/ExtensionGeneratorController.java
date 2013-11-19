@@ -173,35 +173,23 @@ public class ExtensionGeneratorController {
     form.render(parameters);
   }
 
+  @Ajax
   @Resource
-  public Response.Content<?> exportExtensionWAR() throws IOException {
+  public Response.Content<?> exportExtension(String archiveType, String extensionName) throws IOException {
     try {
-      InputStream inputStream = extensionGeneratorService.generateWARExtension(selectedResources);
-      return Response.ok(inputStream).withMimeType("application/zip").withHeader("Content-Disposition", "filename=\"custom-extension.war\"");
+      InputStream inputStream = null;
+      if (archiveType.equals("zip")) {
+        inputStream = extensionGeneratorService.generateExtensionMavenProject(extensionName, selectedResources);
+      } else if (archiveType.equals("ear")) {
+        inputStream = extensionGeneratorService.generateExtensionEAR(extensionName, selectedResources);
+      } else if (archiveType.equals("war")) {
+        inputStream = extensionGeneratorService.generateWARExtension(extensionName, selectedResources);
+      } else {
+        throw new IllegalArgumentException("Wrong ArchiveType:" + archiveType + ", for extension '" + extensionName + "'");
+      }
+      return Response.ok(inputStream).withMimeType("application/zip").withHeader("Content-Disposition", "filename=\"" + extensionName + "." + archiveType + "\"");
     } catch (Exception e) {
-      log.error("Error while generationg WAR file, ", e);
-      return Response.content(500, "Error occured while importing resource. See full stack trace in log file");
-    }
-  }
-
-  @Resource
-  public Response.Content<?> exportExtensionEAR() throws IOException {
-    try {
-      InputStream inputStream = extensionGeneratorService.generateExtensionEAR(selectedResources);
-      return Response.ok(inputStream).withMimeType("application/zip").withHeader("Content-Disposition", "filename=\"custom-extension.ear\"");
-    } catch (Exception e) {
-      log.error("Error while generationg EAR file, ", e);
-      return Response.content(500, "Error occured while importing resource. See full stack trace in log file");
-    }
-  }
-
-  @Resource
-  public Response.Content<?> exportExtensionMavenProject() throws IOException {
-    try {
-      InputStream inputStream = extensionGeneratorService.generateExtensionMavenProject(selectedResources);
-      return Response.ok(inputStream).withMimeType("application/zip").withHeader("Content-Disposition", "filename=\"custom-extension-project.zip\"");
-    } catch (Exception e) {
-      log.error("Error while generationg Maven Project, ", e);
+      log.error("Error while generating Archive file, ", e);
       return Response.content(500, "Error occured while importing resource. See full stack trace in log file");
     }
   }

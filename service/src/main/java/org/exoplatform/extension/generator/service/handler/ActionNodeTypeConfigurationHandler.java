@@ -35,7 +35,7 @@ public class ActionNodeTypeConfigurationHandler extends AbstractConfigurationHan
    * {@inheritDoc}
    */
   @SuppressWarnings("unchecked")
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.ECM_ACTION_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -64,7 +64,7 @@ public class ActionNodeTypeConfigurationHandler extends AbstractConfigurationHan
         valuesParam.getValues().add(actionTypeConfigurationLocation.replace("WEB-INF", "war:"));
         try {
           InputStream inputStream = zipFile.getInputStream(zipEntry);
-          Utils.writeZipEnry(zos, actionTypeConfigurationLocation, inputStream);
+          Utils.writeZipEnry(zos, actionTypeConfigurationLocation, extensionName, inputStream, false);
         } catch (Exception e) {
           log.error("Error while marshalling " + zipEntry.getName(), e);
         }

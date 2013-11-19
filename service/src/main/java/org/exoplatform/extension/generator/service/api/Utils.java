@@ -2,7 +2,6 @@ package org.exoplatform.extension.generator.service.api;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +30,7 @@ public class Utils {
 
   public static boolean writeConfiguration(ZipOutputStream zos, String entryName, Configuration configuration) {
     try {
-      if(entryName.startsWith("/")) {
+      if (entryName.startsWith("/")) {
         entryName = entryName.substring(1);
       }
       zos.putNextEntry(new ZipEntry(entryName));
@@ -50,7 +49,7 @@ public class Utils {
       configuration.addExternalComponentPlugins(externalComponentPlugin);
     }
     try {
-      if(entryName.startsWith("/")) {
+      if (entryName.startsWith("/")) {
         entryName = entryName.substring(1);
       }
       zos.putNextEntry(new ZipEntry(entryName));
@@ -63,30 +62,43 @@ public class Utils {
     return true;
   }
 
-  public static void writeZipEnry(ZipOutputStream zos, String entryName, String content) {
-    try {
-      if(entryName.startsWith("/")) {
-        entryName = entryName.substring(1);
+  public static void copyZipEnries(ZipInputStream zin, ZipOutputStream zos, String extensionName, String rootPathInTarget) throws Exception {
+    if (rootPathInTarget == null) {
+      rootPathInTarget = "";
+    }
+    ZipEntry entry;
+    while ((entry = zin.getNextEntry()) != null) {
+      if (entry.isDirectory() || !entry.getName().contains(".")) {
+        continue;
       }
-      zos.putNextEntry(new ZipEntry(entryName));
-      zos.write(content.getBytes("UTF-8"));
-      zos.closeEntry();
-    } catch (Exception e) {
-      log.error("Error while writing file " + entryName, e);
+      String targetEntryName = rootPathInTarget + ("/") + entry.getName();
+      while (targetEntryName.contains("//")) {
+        targetEntryName = targetEntryName.replace("//", "/");
+      }
+      if (targetEntryName.startsWith("/")) {
+        targetEntryName = targetEntryName.substring(1);
+      }
+      writeZipEnry(zos, targetEntryName, extensionName, zin, true);
+    }
+    zos.flush();
+  }
+
+  public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, InputStream inputStream, boolean changeContent) throws Exception {
+    if (changeContent) {
+      String content = IOUtils.toString(inputStream);
+      writeZipEnry(zos, entryName, extensionName, content, true);
+    } else {
+      entryName = entryName.replace("custom-extension", extensionName);
+      writeZipEnry(zos, entryName, IOUtils.toByteArray(inputStream));
     }
   }
 
-  public static void writeZipEnry(ZipOutputStream zos, String entryName, InputStream inputStream) {
-    try {
-      if(entryName.startsWith("/")) {
-        entryName = entryName.substring(1);
-      }
-      zos.putNextEntry(new ZipEntry(entryName));
-      zos.write(IOUtils.toByteArray(inputStream));
-      zos.closeEntry();
-    } catch (Exception e) {
-      log.error("Error while writing file " + entryName, e);
+  public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, String content, boolean changeContent) throws Exception {
+    entryName = entryName.replace("custom-extension", extensionName);
+    if (changeContent) {
+      content = content.replaceAll("custom-extension", extensionName);
     }
+    writeZipEnry(zos, entryName, content.getBytes("UTF-8"));
   }
 
   public static byte[] toXML(Object obj) throws Exception {
@@ -125,26 +137,17 @@ public class Utils {
     return templates;
   }
 
-  public static void copyZipEnries(ZipInputStream zin, ZipOutputStream zos, String rootPathInTarget) throws IOException {
-    if (rootPathInTarget == null) {
-      rootPathInTarget = "";
+  private static void writeZipEnry(ZipOutputStream zos, String entryName, byte[] bytes) {
+    try {
+      if (entryName.startsWith("/")) {
+        entryName = entryName.substring(1);
+      }
+      zos.putNextEntry(new ZipEntry(entryName));
+      zos.write(bytes);
+      zos.closeEntry();
+    } catch (Exception e) {
+      log.error("Error while writing file " + entryName, e);
     }
-    ZipEntry entry;
-    while ((entry = zin.getNextEntry()) != null) {
-      if(entry.isDirectory() || !entry.getName().contains(".")) {
-        continue;
-      }
-      String targetEntryName = rootPathInTarget + ("/") + entry.getName();
-      while (targetEntryName.contains("//")) {
-        targetEntryName = targetEntryName.replace("//", "/");
-      }
-      if(targetEntryName.startsWith("/")) {
-        targetEntryName = targetEntryName.substring(1);
-      }
-      zos.putNextEntry(new ZipEntry(targetEntryName));
-      IOUtils.copy(zin, zos);
-    }
-    zos.flush();
   }
 
 }

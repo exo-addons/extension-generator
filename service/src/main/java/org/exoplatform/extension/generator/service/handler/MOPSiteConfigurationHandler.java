@@ -42,7 +42,7 @@ public class MOPSiteConfigurationHandler extends AbstractConfigurationHandler {
   /**
    * {@inheritDoc}
    */
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, siteResourcePath);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -57,7 +57,7 @@ public class MOPSiteConfigurationHandler extends AbstractConfigurationHandler {
           ZipEntry zipEntry = (ZipEntry) entries.nextElement();
           try {
             InputStream inputStream = zipFile.getInputStream(zipEntry);
-            Utils.writeZipEnry(zos, SITES_CONFIGURATION_LOCATION + zipEntry.getName(), inputStream);
+            Utils.writeZipEnry(zos, SITES_CONFIGURATION_LOCATION + zipEntry.getName(), extensionName, inputStream, false);
           } catch (Exception e) {
             log.error("Error while serializing MOP data", e);
             return false;

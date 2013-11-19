@@ -39,7 +39,7 @@ public class SiteExplorerTemplatesConfigurationHandler extends AbstractConfigura
   /**
    * {@inheritDoc}
    */
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.ECM_VIEW_TEMPLATES_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -65,7 +65,7 @@ public class SiteExplorerTemplatesConfigurationHandler extends AbstractConfigura
           InputStream inputStream = zipFile.getInputStream(entry);
           if (filePath.endsWith(".gtmpl")) {
             String location = VIEW_TEMPLATES_LOCATION + "/" + extractTemplateName(filePath);
-            Utils.writeZipEnry(zos, location, inputStream);
+            Utils.writeZipEnry(zos, location, extensionName, inputStream, false);
           } else if (filePath.endsWith(".xml")) {
             log.debug("Parsing : " + filePath);
 

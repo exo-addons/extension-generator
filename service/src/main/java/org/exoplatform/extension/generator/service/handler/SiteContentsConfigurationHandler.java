@@ -49,7 +49,7 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
   /**
    * {@inheritDoc}
    */
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.CONTENT_SITES_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -89,7 +89,7 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
             } else {
               String location = zipEntry.getName();
               location = location.substring(location.lastIndexOf("/" + siteName + "/") + 1);
-              Utils.writeZipEnry(zos, WCM_CONTENT_CONFIGURATION_LOCATION + location, inputStream);
+              Utils.writeZipEnry(zos, WCM_CONTENT_CONFIGURATION_LOCATION + location, extensionName, inputStream, false);
             }
           } catch (Exception e) {
             log.error("Exception while writing Data", e);

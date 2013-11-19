@@ -100,8 +100,33 @@
 							</div>
 						</div>
 					</div>
-					<div class="span8" id="exportImportForm">
-						#{include path=form.gtmpl}#{/include}
+					<div class="span8">
+						<div class="uiBox generatorContent" id="generatorContent">
+							<h6 class="title">Extension Content</h6>
+							<div class="exportForm uiContentBox">
+							  <h6>Choose a name for your exension:</h6>
+							  <center><input type="text" name="extensionName" id="extensionName"></center>
+							  <h6>Archive type:</h6>
+							  <center>
+								  <div class="archiveTypeContainer">
+									  <span class="uiRadio">
+									  <input type="radio" id="projectArchiveType" name="archiveType" checked="checked" value="zip"/><span></span><label for="projectArchiveType">Maven Project</label></span>
+									  <span class="uiRadio">
+									  <input type="radio" id="earArchiveType" name="archiveType" value="ear"/><span></span><label for="earArchiveType">EAR</label></span>
+									  <span class="uiRadio">
+									  <input type="radio" id="warArchiveType" name="archiveType" value="war"/><span></span><label for="warArchiveType">WAR</label></span>
+								  </div>
+							  </center>
+							  <center>
+								  <div class="uiAction">
+									<button name="export" onclick="exportProject()" type="button" class="btn btn-primary">Export</button>
+								  </div>
+							  </center>
+							</div>
+							<div class="uiContentBox SelectedContent" id="exportImportForm">
+								#{include path=form.gtmpl}#{/include}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

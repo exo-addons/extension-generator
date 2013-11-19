@@ -42,7 +42,7 @@ public class MetadataTemplatesConfigurationHandler extends AbstractConfiguration
   /**
    * {@inheritDoc}
    */
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.ECM_TEMPLATES_METADATA_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -68,7 +68,7 @@ public class MetadataTemplatesConfigurationHandler extends AbstractConfiguration
             metaDatas.add(metadata);
           } else {
             String location = DMS_CONFIGURATION_LOCATION + zipEntry.getName().replace(":", "_");
-            Utils.writeZipEnry(zos, location, inputStream);
+            Utils.writeZipEnry(zos, location, extensionName, inputStream, false);
           }
         } catch (Exception e) {
           log.error("Error while serializing Metadata templates data", e);

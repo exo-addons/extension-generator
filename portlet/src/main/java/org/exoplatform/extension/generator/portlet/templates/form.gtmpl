@@ -1,14 +1,3 @@
-<div class="uiBox generatorContent" id="generatorContent">
-	<h6 class="title">Extension Content</h6>
-	<div class="uiContentBox">								
-		<div class="uiAction ">
-		  <button type="button" onclick="location.href='@{ExtensionGeneratorController.exportExtensionWAR()}'" class="btn btn-primary" id="button-download-war">Export WAR Extension</button>
-		  <button type="button" onclick="location.href='@{ExtensionGeneratorController.exportExtensionEAR()}'" class="btn btn-primary" id="button-download-ear">Export EAR Extension</button>
-		  <button type="button" onclick="location.href='@{ExtensionGeneratorController.exportExtensionMavenProject()}'" class="btn btn-primary" id="button-download-maven">Export Extension Maven project</button>
-		</div>	
-	</div>
-	<div class="uiContentBox SelectedContent">
-
 <%
 	  public String addSelectedContent(def selectedResourcesList, def name, def title) {
 	   if(!selectedResourcesList.isEmpty()) {
@@ -31,23 +20,21 @@
 		<% 
 	   }
 	  }
-	  addSelectedContent(portalSiteSelectedNodes, "portalSitesSelectedResources", "Selected Portal Sites");
-	  addSelectedContent(groupSiteSelectedNodes, "groupSitesSelectedResources", "Selected Group Sites");
-	  addSelectedContent(userSiteSelectedNodes, "userSitesSelectedResources", "Selected User Sites");
-	  addSelectedContent(siteContentSelectedNodes, "siteContentSelectedResources", "Selected Sites Content");
-	  addSelectedContent(applicationCLVTemplatesSelectedNodes, "CLVTemplatesSelectedResources", "Selected CLV Templates");
-	  addSelectedContent(applicationSearchTemplatesSelectedNodes, "SearchTemplatesSelectedResources", "Selected Search Templates");
-	  addSelectedContent(documentTypeTemplatesSelectedNodes, "documentTypeTemplatesSelectedResources", "Selected Document Types Templates");
-	  addSelectedContent(metadataTemplatesSelectedNodes, "metadataTemplatesSelectedResources", "Selected Metadata Templates");
-	  addSelectedContent(taxonomySelectedNodes, "taxonomySelectedResources", "Selected Taxonomies");
+	  addSelectedContent(portalSiteSelectedNodes, "portalSitesSelectedResources", "Portal Sites");
+	  addSelectedContent(groupSiteSelectedNodes, "groupSitesSelectedResources", "Group Sites");
+	  addSelectedContent(userSiteSelectedNodes, "userSitesSelectedResources", "User Sites");
+	  addSelectedContent(siteContentSelectedNodes, "siteContentSelectedResources", "Sites Content");
+	  addSelectedContent(applicationCLVTemplatesSelectedNodes, "CLVTemplatesSelectedResources", "CLV Templates");
+	  addSelectedContent(applicationSearchTemplatesSelectedNodes, "SearchTemplatesSelectedResources", "Search Templates");
+	  addSelectedContent(documentTypeTemplatesSelectedNodes, "documentTypeTemplatesSelectedResources", "Document Types Templates");
+	  addSelectedContent(metadataTemplatesSelectedNodes, "metadataTemplatesSelectedResources", "Metadata Templates");
+	  addSelectedContent(taxonomySelectedNodes, "taxonomySelectedResources", "Taxonomies");
 	  addSelectedContent(querySelectedNodes, "querySelectedResources", "All JCR Queries");
-	  addSelectedContent(driveSelectedNodes, "driveSelectedResources", "Selected Drives");
-	  addSelectedContent(scriptSelectedNodes, "scriptSelectedResources", "Selected ECMS Scripts");
-	  addSelectedContent(actionNodeTypeSelectedNodes, "actionNodeTypeSelectedResources", "Selected Action NodeTypes");
-	  addSelectedContent(nodeTypeSelectedNodes, "nodeTypeSelectedResources", "Selected NodeTypes");
-	  addSelectedContent(registrySelectedNodes, "registrySelectedResources", "Selected Application Registry Categories");
-	  addSelectedContent(viewTemplateSelectedNodes, "viewTemplatesSelectedResources", "Selected View Templates");
-	  addSelectedContent(viewConfigurationSelectedNodes, "viewConfigurationSelectedResources", "Selected View Configuration");
+	  addSelectedContent(driveSelectedNodes, "driveSelectedResources", "Drives");
+	  addSelectedContent(scriptSelectedNodes, "scriptSelectedResources", "ECMS Scripts");
+	  addSelectedContent(actionNodeTypeSelectedNodes, "actionNodeTypeSelectedResources", "Action NodeTypes");
+	  addSelectedContent(nodeTypeSelectedNodes, "nodeTypeSelectedResources", "NodeTypes");
+	  addSelectedContent(registrySelectedNodes, "registrySelectedResources", "Application Registry Categories");
+	  addSelectedContent(viewTemplateSelectedNodes, "viewTemplatesSelectedResources", "View Templates");
+	  addSelectedContent(viewConfigurationSelectedNodes, "viewConfigurationSelectedResources", "View Configuration");
 %>
-	</div>
-</div>

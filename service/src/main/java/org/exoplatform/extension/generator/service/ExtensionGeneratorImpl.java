@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -218,27 +217,28 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   public Set<Node> getViewConfigurationNodes() {
     return getNodes(ECM_VIEW_CONFIGURATION_PATH);
   }
+
   /**
    * {@inheritDoc}
    * 
    */
   @Override
-  public InputStream generateExtensionEAR(Set<String> selectedResources) throws IOException {
-    File file = generateExtensionEARFile(selectedResources);
+  public InputStream generateExtensionEAR(String extensionName, Set<String> selectedResources) throws Exception {
+    File file = generateExtensionEARFile(extensionName, selectedResources);
     return new FileInputStream(file);
   }
 
-  private File generateExtensionEARFile(Set<String> selectedResources) throws IOException, FileNotFoundException {
+  private File generateExtensionEARFile(String extensionName, Set<String> selectedResources) throws Exception {
     File file = File.createTempFile("CustomExtension", ".ear");
     file.deleteOnExit();
     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
     // Put WAR file
-    Utils.writeZipEnry(zos, "custom-extension.war", generateWARExtension(selectedResources));
+    Utils.writeZipEnry(zos, extensionName + ".war", extensionName, generateWARExtension(extensionName, selectedResources), false);
     // Put JAR file
-    Utils.writeZipEnry(zos, "lib/custom-extension-config.jar", generateActiovationJar());
+    Utils.writeZipEnry(zos, "lib/" + extensionName + "-config.jar", extensionName, generateActiovationJar(extensionName), false);
     // Put application.xml
     InputStream applicationXMLInputStream = getClass().getClassLoader().getResourceAsStream("generator/template/application.xml");
-    Utils.writeZipEnry(zos, "META-INF/application.xml", applicationXMLInputStream);
+    Utils.writeZipEnry(zos, "META-INF/application.xml", extensionName, applicationXMLInputStream, true);
     zos.close();
     return file;
   }
@@ -248,22 +248,22 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * 
    */
   @Override
-  public InputStream generateExtensionMavenProject(Set<String> selectedResources) throws IOException {
+  public InputStream generateExtensionMavenProject(String extensionName, Set<String> selectedResources) throws Exception {
     File zipFile = File.createTempFile("Maven-CustomExtension", ".zip");
     zipFile.deleteOnExit();
     ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
 
     // Copy Zip file containing Maven Project Structure in Temp File
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("generator/template/maven.zip");
-    Utils.copyZipEnries(new ZipInputStream(inputStream), zipOutputStream, null);
+    Utils.copyZipEnries(new ZipInputStream(inputStream), zipOutputStream, extensionName, null);
 
     // Add Activation JAR Configuration File in Maven Project
-    InputStream jarInputStream = generateActiovationJar();
-    Utils.copyZipEnries(new ZipInputStream(jarInputStream), zipOutputStream, "config/src/main/resources");
+    InputStream jarInputStream = generateActiovationJar(extensionName);
+    Utils.copyZipEnries(new ZipInputStream(jarInputStream), zipOutputStream, extensionName, "config/src/main/resources");
 
     // Add Extension WAR files in Maven Project
-    InputStream warInputStream = generateWARExtension(selectedResources);
-    Utils.copyZipEnries(new ZipInputStream(warInputStream), zipOutputStream, "war/src/main/webapp");
+    InputStream warInputStream = generateWARExtension(extensionName, selectedResources);
+    Utils.copyZipEnries(new ZipInputStream(warInputStream), zipOutputStream, extensionName, "war/src/main/webapp");
 
     zipOutputStream.close();
     return new FileInputStream(zipFile);
@@ -274,7 +274,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * 
    */
   @Override
-  public InputStream generateWARExtension(Set<String> selectedResources) throws IOException {
+  public InputStream generateWARExtension(String extensionName, Set<String> selectedResources) throws Exception {
     File file = File.createTempFile("CustomExtension", ".war");
     file.deleteOnExit();
     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
@@ -282,7 +282,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
 
     Configuration configuration = new Configuration();
     for (ConfigurationHandler configurationHandler : handlers) {
-      boolean extracted = configurationHandler.writeData(zos, tempSelectedResources);
+      boolean extracted = configurationHandler.writeData(zos, extensionName, tempSelectedResources);
       if (extracted) {
         List<String> configurationPaths = configurationHandler.getConfigurationPaths();
         if (configurationPaths != null) {
@@ -298,7 +298,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
 
     // Write web.xml file
     InputStream applicationXMLInputStream = getClass().getClassLoader().getResourceAsStream(WEB_XML_TEMPLATE_LOCATION);
-    Utils.writeZipEnry(zos, WEB_XML_LOCATION, applicationXMLInputStream);
+    Utils.writeZipEnry(zos, WEB_XML_LOCATION, extensionName, applicationXMLInputStream, true);
 
     try {
       zos.flush();
@@ -319,6 +319,16 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
       }
     }
     return filteredSelectedResources;
+  }
+
+  private InputStream generateActiovationJar(String extensionName) throws Exception {
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    ZipOutputStream zos = new ZipOutputStream(out);
+
+    InputStream xmlInputStream = getClass().getClassLoader().getResourceAsStream("generator/template/configuration.xml");
+    Utils.writeZipEnry(zos, "conf/configuration.xml", extensionName, xmlInputStream, true);
+    zos.close();
+    return new ByteArrayInputStream(out.toByteArray());
   }
 
   private Set<Node> getNodes(String path) {
@@ -349,16 +359,6 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
       managementController = (ManagementController) PortalContainer.getInstance().getComponentInstanceOfType(ManagementController.class);
     }
     return managementController;
-  }
-
-  private InputStream generateActiovationJar() throws IOException {
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(out);
-
-    InputStream xmlInputStream = getClass().getClassLoader().getResourceAsStream("generator/template/configuration.xml");
-    Utils.writeZipEnry(zos, "conf/configuration.xml", xmlInputStream);
-    zos.close();
-    return new ByteArrayInputStream(out.toByteArray());
   }
 
 }

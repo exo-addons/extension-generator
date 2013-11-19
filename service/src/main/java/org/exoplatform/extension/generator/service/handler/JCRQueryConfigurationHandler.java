@@ -24,7 +24,7 @@ public class JCRQueryConfigurationHandler extends AbstractConfigurationHandler {
   /**
    * {@inheritDoc}
    */
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, ExtensionGenerator.ECM_QUERY_PATH);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -37,7 +37,7 @@ public class JCRQueryConfigurationHandler extends AbstractConfigurationHandler {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
         try {
           InputStream inputStream = zipFile.getInputStream(zipEntry);
-          Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + zipEntry.getName(), inputStream);
+          Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + zipEntry.getName(), extensionName, inputStream, false);
           configurationPaths.add(DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + zipEntry.getName());
         } catch (Exception e) {
           log.error("Error while serializing JCR Query data", e);

@@ -36,7 +36,7 @@ public abstract class ApplicationTemplatesConfigurationHandler extends AbstractC
    * {@inheritDoc}
    */
   @Override
-  public boolean writeData(ZipOutputStream zos, Collection<String> selectedResources) {
+  public boolean writeData(ZipOutputStream zos, String extensionName, Collection<String> selectedResources) {
     Set<String> filteredSelectedResources = filterSelectedResources(selectedResources, stagingExtensionPath);
     if (filteredSelectedResources.isEmpty()) {
       return false;
@@ -58,7 +58,7 @@ public abstract class ApplicationTemplatesConfigurationHandler extends AbstractC
           }
           try {
             InputStream inputStream = zipFile.getInputStream(zipEntry);
-            Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + zipEntry.getName(), inputStream);
+            Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + zipEntry.getName(), extensionName, inputStream, false);
           } catch (Exception e) {
             getLogger().error(e);
             return false;
