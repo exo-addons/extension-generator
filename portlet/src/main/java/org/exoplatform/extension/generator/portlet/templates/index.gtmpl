@@ -81,7 +81,7 @@
 										<%=computeContent(portalSiteNodes,"portalsites", "Portal Sites", portalSitePath)%>
 										<%=computeContent(groupSiteNodes,"groupsites", "Group Sites",groupSitePath)%>
 										<%=computeContent(userSiteNodes,"usersites", "User Sites",userSitePath)%>
-										<%=computeContent(siteContentNodes,"contentsites", "Site JCR Conents",siteContentPath)%>
+										<%=computeContent(siteContentNodes,"contentsites", "Site JCR Contents",siteContentPath)%>
 										<%=computeContent(applicationCLVTemplatesNodes,"clv_templates", "Content List Templates",applicationCLVTemplatesPath)%>
 										<%=computeContent(applicationSearchTemplatesNodes,"search_templates", "Search Templates",applicationSearchTemplatesPath)%>
 										<%=computeContent(documentTypeTemplatesNodes,"document_templates", "Document Type templates",documentTypeTemplatesPath)%>
