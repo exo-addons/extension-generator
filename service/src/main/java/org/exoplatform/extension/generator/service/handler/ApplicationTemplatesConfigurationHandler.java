@@ -72,7 +72,7 @@ public abstract class ApplicationTemplatesConfigurationHandler extends AbstractC
     ExternalComponentPlugins externalComponentPlugins = new ExternalComponentPlugins();
     InitParams params = new InitParams();
     params.addParam(getValueParam("portletName", portletName));
-    params.addParam(getValueParam("portlet.template.path", applicationTemplatesHomePath.replace("WEB-INF", "war:")));
+    params.addParam(getValueParam("portlet.template.path", applicationTemplatesHomePath.replace("WEB-INF", "war:").replace("custom-extension", extensionName)));
 
     for (String selectedResourcePath : filteredSelectedResources) {
       PortletTemplateConfig templateConfig = new PortletTemplateConfig();
@@ -100,7 +100,7 @@ public abstract class ApplicationTemplatesConfigurationHandler extends AbstractC
     ComponentPlugin plugin = createComponentPlugin("templates.plugin", PortletTemplatePlugin.class.getName(), "addPlugin", params);
     addComponentPlugin(externalComponentPlugins, ApplicationTemplateManagerService.class.getName(), plugin);
 
-    return Utils.writeConfiguration(zos, DMS_CONFIGURATION_LOCATION + applicationConfigurationFileName, externalComponentPlugins);
+    return Utils.writeConfiguration(zos, DMS_CONFIGURATION_LOCATION + applicationConfigurationFileName, extensionName, externalComponentPlugins);
   }
 
 }

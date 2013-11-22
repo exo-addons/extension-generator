@@ -68,7 +68,7 @@ public class ApplicationRegistryConfigurationHandler extends AbstractConfigurati
         clearTempFiles();
       }
     }
-    return Utils.writeConfiguration(zos, APPLICATION_REGISTRY_CONFIGURATION_XML, externalComponentPlugins);
+    return Utils.writeConfiguration(zos, APPLICATION_REGISTRY_CONFIGURATION_XML,extensionName, externalComponentPlugins);
   }
 
   /**

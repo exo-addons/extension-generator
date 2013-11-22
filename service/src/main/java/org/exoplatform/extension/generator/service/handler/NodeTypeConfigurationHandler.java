@@ -89,8 +89,9 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
       ValuesParam valuesParam = new ValuesParam();
       valuesParam.setName("autoCreatedInNewRepository");
       valuesParam.setValues(new ArrayList<String>());
-      valuesParam.getValues().add(NODETYPE_CONFIGURATION_LOCATION.replace("WEB-INF", "war:"));
+      valuesParam.getValues().add(NODETYPE_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName));
       ComponentPlugin plugin = createComponentPlugin("add.nodetype", AddNodeTypePlugin.class.getName(), "addPlugin", null, valuesParam);
+      plugin.setPriority(100);
       addComponentPlugin(externalComponentPlugins, RepositoryService.class.getName(), plugin);
 
       // Map of (NodeType, Path in WAR Extension)
@@ -104,7 +105,7 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
         }
         String nodeTypeConfigurationLocation = JCR_CONFIGURATION_LOCATION + zipEntry.getName();
         try {
-          addNodeType(zipFile, nodeTypeValues, zipEntry, nodeTypeConfigurationLocation.replace("WEB-INF", "war:"));
+          addNodeType(zipFile, nodeTypeValues, zipEntry, nodeTypeConfigurationLocation.replace("WEB-INF", "war:").replace("custom-extension", extensionName));
         } catch (Exception e) {
           log.error("Error while marshalling " + zipEntry.getName(), e);
         }
@@ -141,7 +142,7 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
     } finally {
       clearTempFiles();
     }
-    return Utils.writeConfiguration(zos, JCR_CONFIGURATION_LOCATION + JCR_CONFIGURATION_NAME, externalComponentPlugins);
+    return Utils.writeConfiguration(zos, JCR_CONFIGURATION_LOCATION + JCR_CONFIGURATION_NAME, extensionName, externalComponentPlugins);
   }
 
   private void getDependencies(NodeType nodeType, List<NodeType> dependencyNodeTypes) {

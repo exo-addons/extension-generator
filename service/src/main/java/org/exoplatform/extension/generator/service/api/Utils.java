@@ -28,7 +28,8 @@ public class Utils {
       + "\r\n   xsi:schemaLocation=\"http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd\""
       + "\r\n   xmlns=\"http://www.exoplatform.org/xml/ns/kernel_1_2.xsd\">";
 
-  public static boolean writeConfiguration(ZipOutputStream zos, String entryName, Configuration configuration) {
+  public static boolean writeConfiguration(ZipOutputStream zos, String entryName, String extensionName, Configuration configuration) {
+    entryName = entryName.replace("custom-extension", extensionName);
     try {
       if (entryName.startsWith("/")) {
         entryName = entryName.substring(1);
@@ -43,7 +44,8 @@ public class Utils {
     return true;
   }
 
-  public static boolean writeConfiguration(ZipOutputStream zos, String entryName, ExternalComponentPlugins... externalComponentPlugins) {
+  public static boolean writeConfiguration(ZipOutputStream zos, String entryName, String extensionName, ExternalComponentPlugins... externalComponentPlugins) {
+    entryName = entryName.replace("custom-extension", extensionName);
     Configuration configuration = new Configuration();
     for (ExternalComponentPlugins externalComponentPlugin : externalComponentPlugins) {
       configuration.addExternalComponentPlugins(externalComponentPlugin);

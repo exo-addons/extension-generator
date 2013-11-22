@@ -275,7 +275,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    */
   @Override
   public InputStream generateWARExtension(String extensionName, Set<String> selectedResources) throws Exception {
-    File file = File.createTempFile("CustomExtension", ".war");
+    File file = File.createTempFile(extensionName, ".war");
     file.deleteOnExit();
     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
     Vector<String> tempSelectedResources = new Vector<String>(selectedResources);
@@ -287,6 +287,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
         List<String> configurationPaths = configurationHandler.getConfigurationPaths();
         if (configurationPaths != null) {
           for (String path : configurationPaths) {
+            path = path.replace("custom-extension", extensionName);
             configuration.addImport(path);
           }
         }
@@ -294,7 +295,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     }
 
     // Write main configuration.xml file
-    Utils.writeConfiguration(zos, CONFIGURATION_XML_LOCATION, configuration);
+    Utils.writeConfiguration(zos, CONFIGURATION_XML_LOCATION, extensionName, configuration);
 
     // Write web.xml file
     InputStream applicationXMLInputStream = getClass().getClassLoader().getResourceAsStream(WEB_XML_TEMPLATE_LOCATION);

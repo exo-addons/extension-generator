@@ -74,13 +74,13 @@ public class MOPSiteConfigurationHandler extends AbstractConfigurationHandler {
     objectParameter.setName(siteType + ".configuration");
     NewPortalConfig portalConfig = new NewPortalConfig();
     portalConfig.setOwnerType(siteType);
-    portalConfig.setTemplateLocation(SITES_CONFIGURATION_LOCATION.replace("WEB-INF", "war:"));
+    portalConfig.setTemplateLocation(SITES_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName));
     portalConfig.setPredefinedOwner(siteNames);
     objectParameter.setObject(portalConfig);
     params.addParam(objectParameter);
     ComponentPlugin plugin = createComponentPlugin(siteType + ".config.user.listener", NewPortalConfigListener.class.getName(), "initListener", params);
     addComponentPlugin(externalComponentPlugins, UserPortalConfigService.class.getName(), plugin);
-    return Utils.writeConfiguration(zos, SITES_CONFIGURATION_LOCATION + siteType + SITES_CONFIGURATION_NAME, externalComponentPlugins);
+    return Utils.writeConfiguration(zos, SITES_CONFIGURATION_LOCATION + siteType + SITES_CONFIGURATION_NAME, extensionName, externalComponentPlugins);
   }
 
   /**

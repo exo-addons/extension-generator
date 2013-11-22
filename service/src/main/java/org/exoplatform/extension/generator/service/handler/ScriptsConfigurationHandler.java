@@ -53,7 +53,7 @@ public class ScriptsConfigurationHandler extends AbstractConfigurationHandler {
     {
       InitParams params = new InitParams();
       params.addParam(getValueParam("autoCreateInNewRepository", "true"));
-      String location = DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:");
+      String location = DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName);
       // Delete last '/'
       location = location.substring(0, location.length() - 1);
       params.addParam(getValueParam("predefinedScriptsLocation", location));
@@ -88,7 +88,7 @@ public class ScriptsConfigurationHandler extends AbstractConfigurationHandler {
     } finally {
       clearTempFiles();
     }
-    return Utils.writeConfiguration(zos, DMS_CONFIGURATION_LOCATION + SCRIPT_CONFIGURATION_NAME, externalComponentPlugins);
+    return Utils.writeConfiguration(zos, DMS_CONFIGURATION_LOCATION + SCRIPT_CONFIGURATION_NAME, extensionName, externalComponentPlugins);
   }
 
   /**

@@ -84,7 +84,7 @@ public class MetadataTemplatesConfigurationHandler extends AbstractConfiguration
     {
       InitParams params = new InitParams();
       params.addParam(getValueParam("autoCreateInNewRepository", "true"));
-      params.addParam(getValueParam("storedLocation", METADATA_CONFIGURATION_LOCATION.replace("WEB-INF", "war:")));
+      params.addParam(getValueParam("storedLocation", METADATA_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName)));
       ObjectParameter objectParameter = new ObjectParameter();
       objectParameter.setName("metadata.template.configuration");
       TemplateConfig templateConfig = new TemplateConfig();
@@ -106,7 +106,7 @@ public class MetadataTemplatesConfigurationHandler extends AbstractConfiguration
       nodeType.setReferencedSkin(Utils.convertTemplateList(metadataTemplatesMetaData.getTemplates().get("skins")));
       nodeTypes.add(nodeType);
     }
-    return Utils.writeConfiguration(zos, DMS_CONFIGURATION_LOCATION + METADATA_CONFIGURATION_NAME, externalComponentPlugins);
+    return Utils.writeConfiguration(zos, DMS_CONFIGURATION_LOCATION + METADATA_CONFIGURATION_NAME, extensionName, externalComponentPlugins);
   }
 
   @Override

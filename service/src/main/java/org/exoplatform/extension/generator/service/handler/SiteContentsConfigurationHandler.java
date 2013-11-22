@@ -61,7 +61,7 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
         String[] filters = new String[3];
         filters[0] = "no-skeleton:true";
         filters[1] = "taxonomy:false";
-        filters[2] = "version-hitory:true";
+        filters[2] = "no-hitory:true";
         ZipFile zipFile = getExportedFileFromOperation(filteredResource, filters);
 
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -127,16 +127,17 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
       Set<Map.Entry<String, String>> exportedFilesEntrySet = siteData.getSiteMetadata().getExportedFiles().entrySet();
       for (Entry<String, String> exportedFileEntry : exportedFilesEntrySet) {
         DeploymentDescriptor deploymentDescriptor = new DeploymentDescriptor();
-        deploymentDescriptor.setCleanupPublication(false);
+        deploymentDescriptor.setCleanupPublication(true);
         String location = exportedFileEntry.getKey();
         location = location.substring(location.lastIndexOf("/" + siteName + "/") + 1);
-        String xmlLocation = WCM_CONTENT_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + location;
+        String xmlLocation = WCM_CONTENT_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName) + location;
 
         // Replace ".xml" by "_VersionHistory.zip"
-        String versionHistoryLocation = xmlLocation.substring(0, xmlLocation.length() - 4) + "_VersionHistory.zip";
+        // String versionHistoryLocation = xmlLocation.substring(0,
+        // xmlLocation.length() - 4) + "_VersionHistory.zip";
 
         deploymentDescriptor.setSourcePath(xmlLocation);
-        deploymentDescriptor.setVersionHistoryPath(versionHistoryLocation);
+        // deploymentDescriptor.setVersionHistoryPath(versionHistoryLocation);
 
         Target target = new Target();
         target.setWorkspace(siteData.getSiteMetadata().getOptions().get("site-workspace"));
@@ -149,7 +150,7 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
         params.addParam(objectParameter);
       }
     }
-    return Utils.writeConfiguration(zos, WCM_CONTENT_CONFIGURATION_LOCATION + WCM_CONTENT_CONFIGURATION_NAME, contentExternalComponentPlugins, ignoreContentComponentPlugin);
+    return Utils.writeConfiguration(zos, WCM_CONTENT_CONFIGURATION_LOCATION + WCM_CONTENT_CONFIGURATION_NAME, extensionName, contentExternalComponentPlugins, ignoreContentComponentPlugin);
   }
 
   /**

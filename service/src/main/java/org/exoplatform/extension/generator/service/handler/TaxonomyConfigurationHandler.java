@@ -121,8 +121,8 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
       params.addParam(getValueParam("workspace", taxonomyMetaData.getTaxoTreeWorkspace()));
       String treeHomePath = taxonomyMetaData.getTaxoTreeHomePath();
       int lastindex = treeHomePath.lastIndexOf("/" + taxonomyMetaData.getTaxoTreeName());
-      if(lastindex > 0) {
-        if(treeHomePath.length() == (lastindex + taxonomyMetaData.getTaxoTreeName().length() + 1)) {
+      if (lastindex > 0) {
+        if (treeHomePath.length() == (lastindex + taxonomyMetaData.getTaxoTreeName().length() + 1)) {
           treeHomePath = treeHomePath.substring(0, lastindex);
         }
       }
@@ -182,7 +182,7 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
       }
     }
 
-    return Utils.writeConfiguration(zos, WCM_TAXONOMY_CONFIGURATION_LOCATION + WCM_TAXONOMY_CONFIGURATION_NAME, taxonomyExternalComponentPlugin, linkExternalComponentPlugin);
+    return Utils.writeConfiguration(zos, WCM_TAXONOMY_CONFIGURATION_LOCATION + WCM_TAXONOMY_CONFIGURATION_NAME, extensionName, taxonomyExternalComponentPlugin, linkExternalComponentPlugin);
   }
 
   private List<LinkDeploymentDescriptor> getSymLinksFromTreeNode(String treeHomePath, String treeWorkspace) {

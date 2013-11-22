@@ -93,12 +93,12 @@ public class SiteExplorerTemplatesConfigurationHandler extends AbstractConfigura
     ExternalComponentPlugins externalComponentPlugins = new ExternalComponentPlugins();
     // Add constant init params
     allParams.addParam(getValueParam("autoCreateInNewRepository", "true"));
-    allParams.addParam(getValueParam("predefinedViewsLocation", VIEW_CONFIGURATION_LOCATION.replace("WEB-INF", "war:")));
+    allParams.addParam(getValueParam("predefinedViewsLocation", VIEW_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName)));
 
     ComponentPlugin plugin = createComponentPlugin("manage.view.plugin", ManageViewPlugin.class.getName(), "setManageViewPlugin", allParams);
     addComponentPlugin(externalComponentPlugins, ManageViewService.class.getName(), plugin);
 
-    return Utils.writeConfiguration(zos, VIEW_CONFIGURATION_FULL_PATH, externalComponentPlugins);
+    return Utils.writeConfiguration(zos, VIEW_CONFIGURATION_FULL_PATH, extensionName, externalComponentPlugins);
   }
 
   @Override

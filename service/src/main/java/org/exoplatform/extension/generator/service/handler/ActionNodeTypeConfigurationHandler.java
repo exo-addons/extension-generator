@@ -61,7 +61,7 @@ public class ActionNodeTypeConfigurationHandler extends AbstractConfigurationHan
       while (entries.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
         String actionTypeConfigurationLocation = JCR_CONFIGURATION_LOCATION + zipEntry.getName();
-        valuesParam.getValues().add(actionTypeConfigurationLocation.replace("WEB-INF", "war:"));
+        valuesParam.getValues().add(actionTypeConfigurationLocation.replace("WEB-INF", "war:").replace("custom-extension", extensionName));
         try {
           InputStream inputStream = zipFile.getInputStream(zipEntry);
           Utils.writeZipEnry(zos, actionTypeConfigurationLocation, extensionName, inputStream, false);
@@ -72,7 +72,7 @@ public class ActionNodeTypeConfigurationHandler extends AbstractConfigurationHan
     } finally {
       clearTempFiles();
     }
-    return Utils.writeConfiguration(zos, JCR_CONFIGURATION_LOCATION + ACTION_CONFIGURATION_NAME, externalComponentPlugins);
+    return Utils.writeConfiguration(zos, JCR_CONFIGURATION_LOCATION + ACTION_CONFIGURATION_NAME, extensionName, externalComponentPlugins);
   }
 
   @Override
