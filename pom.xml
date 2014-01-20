@@ -7,7 +7,7 @@
 	</parent>
 	<groupId>org.exoplatform.addons.generator</groupId>
 	<artifactId>extension-generator-parent</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>eXo addons - Extension generator </name>
 	<description>eXo Developper Kit - Extension generator for eXo Platform 4</description>
@@ -22,7 +22,7 @@
 		<connection>scm:git:git://github.com/exo-addons/extension-generator.git</connection>
 		<developerConnection>scm:git:git@github.com:exo-addons/extension-generator.git</developerConnection>
 		<url>https://github.com/exo-addons/extension-generator</url>
-	  <tag>1.0.1</tag>
+	  <tag>HEAD</tag>
   </scm>
 	<properties>
 		<org.exoplatform.addons.staging.version>2.1.2</org.exoplatform.addons.staging.version>
