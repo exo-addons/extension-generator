@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,7 +87,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getPortalSiteNodes() {
+  public List<Node> getPortalSiteNodes() {
     return getNodes(SITES_PORTAL_PATH);
   }
 
@@ -94,7 +95,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getGroupSiteNodes() {
+  public List<Node> getGroupSiteNodes() {
     return getNodes(SITES_GROUP_PATH);
   }
 
@@ -102,7 +103,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getUserSiteNodes() {
+  public List<Node> getUserSiteNodes() {
     return getNodes(SITES_USER_PATH);
   }
 
@@ -110,7 +111,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getSiteContentNodes() {
+  public List<Node> getSiteContentNodes() {
     return getNodes(CONTENT_SITES_PATH);
   }
 
@@ -118,7 +119,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getApplicationCLVTemplatesNodes() {
+  public List<Node> getApplicationCLVTemplatesNodes() {
     return getNodes(ECM_TEMPLATES_APPLICATION_CLV_PATH);
   }
 
@@ -126,7 +127,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getApplicationSearchTemplatesNodes() {
+  public List<Node> getApplicationSearchTemplatesNodes() {
     return getNodes(ECM_TEMPLATES_APPLICATION_SEARCH_PATH);
   }
 
@@ -134,7 +135,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getDocumentTypeTemplatesNodes() {
+  public List<Node> getDocumentTypeTemplatesNodes() {
     return getNodes(ECM_TEMPLATES_DOCUMENT_TYPE_PATH);
   }
 
@@ -142,7 +143,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getMetadataTemplatesNodes() {
+  public List<Node> getMetadataTemplatesNodes() {
     return getNodes(ECM_TEMPLATES_METADATA_PATH);
   }
 
@@ -150,7 +151,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getTaxonomyNodes() {
+  public List<Node> getTaxonomyNodes() {
     return getNodes(ECM_TAXONOMY_PATH);
   }
 
@@ -158,7 +159,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getQueryNodes() {
+  public List<Node> getQueryNodes() {
     return getNodes(ECM_QUERY_PATH);
   }
 
@@ -166,7 +167,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getDriveNodes() {
+  public List<Node> getDriveNodes() {
     return getNodes(ECM_DRIVE_PATH);
   }
 
@@ -174,7 +175,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getScriptNodes() {
+  public List<Node> getScriptNodes() {
     return getNodes(ECM_SCRIPT_PATH);
   }
 
@@ -182,7 +183,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getActionNodeTypeNodes() {
+  public List<Node> getActionNodeTypeNodes() {
     return getNodes(ECM_ACTION_PATH);
   }
 
@@ -190,7 +191,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getNodeTypeNodes() {
+  public List<Node> getNodeTypeNodes() {
     return getNodes(ECM_NODETYPE_PATH);
   }
 
@@ -198,7 +199,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getRegistryNodes() {
+  public List<Node> getRegistryNodes() {
     return getNodes(REGISTRY_PATH);
   }
 
@@ -206,7 +207,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getViewTemplatesNodes() {
+  public List<Node> getViewTemplatesNodes() {
     return getNodes(ECM_VIEW_TEMPLATES_PATH);
   }
 
@@ -214,7 +215,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
-  public Set<Node> getViewConfigurationNodes() {
+  public List<Node> getViewConfigurationNodes() {
     return getNodes(ECM_VIEW_CONFIGURATION_PATH);
   }
 
@@ -332,7 +333,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     return new ByteArrayInputStream(out.toByteArray());
   }
 
-  private Set<Node> getNodes(String path) {
+  private List<Node> getNodes(String path) {
     ManagedRequest request = ManagedRequest.Factory.create(OperationNames.READ_RESOURCE, PathAddress.pathAddress(path), ContentType.JSON);
     ManagedResponse response = getManagementController().execute(request);
     if (!response.getOutcome().isSuccess()) {
@@ -340,7 +341,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
       throw new RuntimeException(response.getOutcome().getFailureDescription());
     }
     ReadResourceModel result = (ReadResourceModel) response.getResult();
-    Set<Node> children = new HashSet<Node>(result.getChildren().size());
+    List<Node> children = new ArrayList<Node>(result.getChildren().size());
     if (result.getChildren() != null && !result.getChildren().isEmpty()) {
       for (String childName : result.getChildren()) {
         String description = result.getChildDescription(childName).getDescription();
@@ -348,6 +349,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
         Node child = new Node(childName, description, childPath);
         children.add(child);
       }
+      Collections.sort(children);
     } else {
       Node parent = new Node(path, result.getDescription(), path);
       children.add(parent);

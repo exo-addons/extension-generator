@@ -2,7 +2,7 @@ package org.exoplatform.extension.generator.service.api;
 
 import java.io.Serializable;
 
-public class Node implements Serializable {
+public class Node implements Serializable, Comparable<Node> {
   private static final long serialVersionUID = -8330709372395885654L;
 
   private String path;
@@ -55,5 +55,10 @@ public class Node implements Serializable {
   @Override
   public int hashCode() {
     return path.hashCode();
+  }
+
+  @Override
+  public int compareTo(Node o) {
+    return text.compareTo(o.getText());
   }
 }

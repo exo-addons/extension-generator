@@ -3,6 +3,7 @@ package org.exoplatform.extension.generator.service.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 public interface ExtensionGenerator {
@@ -31,7 +32,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of portal sites managed paths.
    */
-  Set<Node> getPortalSiteNodes();
+  List<Node> getPortalSiteNodes();
 
   /**
    * Returns the list of sub resources of MOP of type groupsites computed from
@@ -39,7 +40,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of portal sites managed paths.
    */
-  Set<Node> getGroupSiteNodes();
+  List<Node> getGroupSiteNodes();
 
   /**
    * Returns the list of sub resources of MOP of type usersites computed from
@@ -47,7 +48,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of portal sites managed paths.
    */
-  Set<Node> getUserSiteNodes();
+  List<Node> getUserSiteNodes();
 
   /**
    * Returns the list of sub resources of /content/sites managed resources
@@ -55,7 +56,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of site contents managed paths.
    */
-  Set<Node> getSiteContentNodes();
+  List<Node> getSiteContentNodes();
 
   /**
    * Returns the list of sub resources of
@@ -64,7 +65,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of CLV templates managed paths.
    */
-  Set<Node> getApplicationCLVTemplatesNodes();
+  List<Node> getApplicationCLVTemplatesNodes();
 
   /**
    * Returns the list of sub resources of
@@ -73,7 +74,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of Search Portlet Templates managed paths.
    */
-  Set<Node> getApplicationSearchTemplatesNodes();
+  List<Node> getApplicationSearchTemplatesNodes();
 
   /**
    * Returns the list of sub resources of
@@ -82,7 +83,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of DocumentType templates managed paths.
    */
-  Set<Node> getDocumentTypeTemplatesNodes();
+  List<Node> getDocumentTypeTemplatesNodes();
 
   /**
    * Returns the list of sub resources of
@@ -91,7 +92,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of metadata templates managed paths.
    */
-  Set<Node> getMetadataTemplatesNodes();
+  List<Node> getMetadataTemplatesNodes();
 
   /**
    * Returns the list of sub resources of /ecmadmin/taxonomy managed resources
@@ -99,7 +100,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of taxonomy managed paths.
    */
-  Set<Node> getTaxonomyNodes();
+  List<Node> getTaxonomyNodes();
 
   /**
    * Returns the list of sub resources of /ecmadmin/queries managed resources
@@ -107,7 +108,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of JCR Query managed paths.
    */
-  Set<Node> getQueryNodes();
+  List<Node> getQueryNodes();
 
   /**
    * Returns the list of sub resources of /ecmadmin/drive managed resources
@@ -115,7 +116,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of ECMS Drives managed paths.
    */
-  Set<Node> getDriveNodes();
+  List<Node> getDriveNodes();
 
   /**
    * Returns the list of sub resources of /ecmadmin/script managed resources
@@ -123,7 +124,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of ECMS Script managed paths.
    */
-  Set<Node> getScriptNodes();
+  List<Node> getScriptNodes();
 
   /**
    * Returns the list of sub resources of /ecmadmin/action managed resources
@@ -131,7 +132,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of action nodetype managed paths.
    */
-  Set<Node> getActionNodeTypeNodes();
+  List<Node> getActionNodeTypeNodes();
 
   /**
    * Returns the list of sub resources of /ecmadmin/nodetype managed resources
@@ -139,7 +140,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of JCR Nodetype managed paths.
    */
-  Set<Node> getNodeTypeNodes();
+  List<Node> getNodeTypeNodes();
 
   /**
    * Returns the list of sub resources of /ecmadmin/taxonomy managed resources
@@ -147,7 +148,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of application registry categories managed paths.
    */
-  Set<Node> getRegistryNodes();
+  List<Node> getRegistryNodes();
 
   /**
    * Returns the list of sub resources of /ecmadmin/view/templates managed resources
@@ -155,7 +156,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of ECMS View Templates managed paths.
    */
-  Set<Node> getViewTemplatesNodes();
+  List<Node> getViewTemplatesNodes();
 
   /**
    * Returns the list of sub resources of /ecmadmin/view managed resources
@@ -163,7 +164,7 @@ public interface ExtensionGenerator {
    * 
    * @return list of ECMS View Configuration managed paths.
    */
-  Set<Node> getViewConfigurationNodes();
+  List<Node> getViewConfigurationNodes();
 
   /**
    * Generates the WAR Extension by including seleted managed paths to export

@@ -25,8 +25,8 @@
 	  <tag>HEAD</tag>
   </scm>
 	<properties>
-		<org.exoplatform.addons.staging.version>2.1.1</org.exoplatform.addons.staging.version>
-		<org.exoplatform.platform.version>4.0.3</org.exoplatform.platform.version>
+		<org.exoplatform.addons.staging.version>2.1.2</org.exoplatform.addons.staging.version>
+		<org.exoplatform.platform.version>4.0.4</org.exoplatform.platform.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -87,7 +87,6 @@
 	<modules>
 		<module>service</module>
 		<module>portlet</module>
-		<module>packaging-ear</module>
-		<module>packaging-tomcat</module>
+		<module>packaging</module>
 	</modules>
 </project>

@@ -1,4 +1,10 @@
 (function($) {
+	if(jQuery && !$) {
+		$ = jQuery;
+	}
+	if(!jQuery && $) {
+		jQuery = $;
+	}
 	$('.title-commands #expandAllTree').on("click", function() {
 		$('.uiTreeExplorer .tree-checkbox').each(function() {
 			this.checked = true;

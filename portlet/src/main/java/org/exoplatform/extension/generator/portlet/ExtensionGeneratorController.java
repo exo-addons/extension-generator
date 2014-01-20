@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ public class ExtensionGeneratorController {
   Template index;
 
   Set<String> selectedResources = Collections.synchronizedSet(new HashSet<String>());
-  Map<String, Set<Node>> resources = new HashMap<String, Set<Node>>();
+  Map<String, List<Node>> resources = new HashMap<String, List<Node>>();
 
   static Map<String, Object> parameters = new HashMap<String, Object>();
   static {
@@ -133,7 +134,7 @@ public class ExtensionGeneratorController {
     if (checked != null && path != null && !checked.isEmpty() && !path.isEmpty()) {
       if (checked.equals("true")) {
         if (resources.containsKey(path)) {
-          Set<Node> children = resources.get(path);
+          List<Node> children = resources.get(path);
           for (Node node : children) {
             selectedResources.add(node.getPath());
           }
@@ -142,7 +143,7 @@ public class ExtensionGeneratorController {
         }
       } else {
         if (resources.containsKey(path)) {
-          Set<Node> children = resources.get(path);
+          List<Node> children = resources.get(path);
           for (Node node : children) {
             selectedResources.remove(node.getPath());
           }

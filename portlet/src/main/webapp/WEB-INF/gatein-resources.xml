@@ -27,6 +27,7 @@
 		</depends>
 		<depends>
 			<module>jquery</module>
+			<as>jQuery</as>
 		</depends>
 		<depends>
 			<module>jQueryDataTable</module>
@@ -39,6 +40,7 @@
 		</script>
 		<depends>
 			<module>jquery</module>
+			<as>jQuery</as>
 		</depends>
 	</module>
 </gatein-resources>
