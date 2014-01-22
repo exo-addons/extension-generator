@@ -15,6 +15,13 @@
 			<depends>
 				<module>jQueryExtensionGeneratorPortlet</module>
 			</depends>
+			<depends>
+				<module>juzu-ajax</module>
+			</depends>
+			<depends>
+				<module>jquery</module>
+				<as>$</as>
+			</depends>
 		</module>
 	</portlet>
 	<module>
@@ -27,7 +34,7 @@
 		</depends>
 		<depends>
 			<module>jquery</module>
-			<as>jQuery</as>
+			<as>$</as>
 		</depends>
 		<depends>
 			<module>jQueryDataTable</module>
