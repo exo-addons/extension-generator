@@ -22,8 +22,8 @@
 		<connection>scm:git:git://github.com/exo-addons/extension-generator.git</connection>
 		<developerConnection>scm:git:git@github.com:exo-addons/extension-generator.git</developerConnection>
 		<url>https://github.com/exo-addons/extension-generator</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 	<properties>
 		<org.exoplatform.addons.staging.version>2.1.2</org.exoplatform.addons.staging.version>
 		<org.exoplatform.platform.version>4.0.4</org.exoplatform.platform.version>
@@ -89,4 +89,37 @@
 		<module>portlet</module>
 		<module>packaging</module>
 	</modules>
+
+	<repositories>
+		<repository>
+			<id>eXo</id>
+			<name>eXo Public Maven Repository Group</name>
+			<url>http://repository.exoplatform.org/content/groups/public/</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>eXo</id>
+			<name>eXo Public Maven Repository Group</name>
+			<url>http://repository.exoplatform.org/content/groups/public/</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 </project>
