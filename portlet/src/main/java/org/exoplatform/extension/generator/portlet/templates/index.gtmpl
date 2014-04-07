@@ -106,15 +106,13 @@
 							<div class="exportForm uiContentBox">
 							  <h6>Choose a name for your exension:</h6>
 							  <center><input type="text" name="extensionName" id="extensionName"></center>
-							  <h6>Archive type:</h6>
+							  <h6>Export extension in format:</h6>
 							  <center>
 								  <div class="archiveTypeContainer">
 									  <span class="uiRadio">
-									  <input type="radio" id="projectArchiveType" name="archiveType" checked="checked" value="zip"/><span></span><label for="projectArchiveType">Maven Project</label></span>
+									  <input type="radio" id="mavenArchiveType" name="archiveType" checked="checked" value="maven"/><span></span><label for="mavenArchiveType">Maven Project</label></span>
 									  <span class="uiRadio">
-									  <input type="radio" id="earArchiveType" name="archiveType" value="ear"/><span></span><label for="earArchiveType">EAR</label></span>
-									  <span class="uiRadio">
-									  <input type="radio" id="warArchiveType" name="archiveType" value="war"/><span></span><label for="warArchiveType">WAR</label></span>
+									  <input type="radio" id="packageArchiveType" name="archiveType" value="package"/><span></span><label for="packageArchiveType">Binaries</label></span>
 								  </div>
 							  </center>
 							  <center>

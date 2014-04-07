@@ -179,12 +179,10 @@ public class ExtensionGeneratorController {
   public Response.Content<?> exportExtension(String archiveType, String extensionName) throws IOException {
     try {
       InputStream inputStream = null;
-      if (archiveType.equals("zip")) {
+      if (archiveType.equals("maven")) {
         inputStream = extensionGeneratorService.generateExtensionMavenProject(extensionName, selectedResources);
-      } else if (archiveType.equals("ear")) {
-        inputStream = extensionGeneratorService.generateExtensionEAR(extensionName, selectedResources);
-      } else if (archiveType.equals("war")) {
-        inputStream = extensionGeneratorService.generateWARExtension(extensionName, selectedResources);
+      } else if (archiveType.equals("package")) {
+        inputStream = extensionGeneratorService.generateExtensionZip(extensionName, selectedResources);
       } else {
         throw new IllegalArgumentException("Wrong ArchiveType:" + archiveType + ", for extension '" + extensionName + "'");
       }

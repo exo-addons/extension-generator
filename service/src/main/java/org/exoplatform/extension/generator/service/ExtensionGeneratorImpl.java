@@ -224,24 +224,16 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * 
    */
   @Override
-  public InputStream generateExtensionEAR(String extensionName, Set<String> selectedResources) throws Exception {
-    File file = generateExtensionEARFile(extensionName, selectedResources);
-    return new FileInputStream(file);
-  }
-
-  private File generateExtensionEARFile(String extensionName, Set<String> selectedResources) throws Exception {
-    File file = File.createTempFile("CustomExtension", ".ear");
+  public InputStream generateExtensionZip(String extensionName, Set<String> selectedResources) throws Exception {
+    File file = File.createTempFile("CustomExtension", ".zip");
     file.deleteOnExit();
     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
     // Put WAR file
-    Utils.writeZipEnry(zos, extensionName + ".war", extensionName, generateWARExtension(extensionName, selectedResources), false);
+    Utils.writeZipEnry(zos, "webapps/" + extensionName + ".war", extensionName, generateWARExtension(extensionName, selectedResources), false);
     // Put JAR file
     Utils.writeZipEnry(zos, "lib/" + extensionName + "-config.jar", extensionName, generateActiovationJar(extensionName), false);
-    // Put application.xml
-    InputStream applicationXMLInputStream = getClass().getClassLoader().getResourceAsStream("generator/template/application.xml");
-    Utils.writeZipEnry(zos, "META-INF/application.xml", extensionName, applicationXMLInputStream, true);
     zos.close();
-    return file;
+    return new FileInputStream(file);
   }
 
   /**
