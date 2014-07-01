@@ -186,7 +186,7 @@ public class ExtensionGeneratorController {
       } else {
         throw new IllegalArgumentException("Wrong ArchiveType:" + archiveType + ", for extension '" + extensionName + "'");
       }
-      return Response.ok(inputStream).withMimeType("application/zip").withHeader("Content-Disposition", "filename=\"" + extensionName + "." + archiveType + "\"");
+      return Response.ok(inputStream).withMimeType("application/zip").withHeader("Content-Disposition", "filename=\"" + extensionName + ".zip\"");
     } catch (Exception e) {
       log.error("Error while generating Archive file, ", e);
       return Response.content(500, "Error occured while importing resource. See full stack trace in log file");
