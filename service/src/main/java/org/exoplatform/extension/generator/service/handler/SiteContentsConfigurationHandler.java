@@ -14,7 +14,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import org.exoplatform.container.xml.Component;
 import org.exoplatform.container.xml.ComponentPlugin;
+import org.exoplatform.container.xml.Configuration;
 import org.exoplatform.container.xml.ExternalComponentPlugins;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ObjectParameter;
@@ -150,7 +152,16 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
         params.addParam(objectParameter);
       }
     }
-    return Utils.writeConfiguration(zos, WCM_CONTENT_CONFIGURATION_LOCATION + WCM_CONTENT_CONFIGURATION_NAME, extensionName, contentExternalComponentPlugins, ignoreContentComponentPlugin);
+
+    Component component = new Component();
+    component.setType(WCMContentInitializerService.class.getName());
+
+    Configuration configuration = new Configuration();
+    configuration.addComponent(component);
+    configuration.addExternalComponentPlugins(contentExternalComponentPlugins);
+    configuration.addExternalComponentPlugins(ignoreContentComponentPlugin);
+
+    return Utils.writeConfiguration(zos, WCM_CONTENT_CONFIGURATION_LOCATION + WCM_CONTENT_CONFIGURATION_NAME, extensionName, configuration);
   }
 
   /**
