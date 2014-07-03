@@ -18,7 +18,10 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.inject.Singleton;
+import javax.ws.rs.core.Response;
 
+import org.exoplatform.application.gadget.Gadget;
+import org.exoplatform.application.gadget.GadgetRegistryService;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.xml.Configuration;
 import org.exoplatform.extension.generator.service.api.ConfigurationHandler;
@@ -29,11 +32,13 @@ import org.exoplatform.extension.generator.service.handler.ActionNodeTypeConfigu
 import org.exoplatform.extension.generator.service.handler.ApplicationRegistryConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.CLVTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.DrivesConfigurationHandler;
+import org.exoplatform.extension.generator.service.handler.GadgetsConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.JCRQueryConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.MOPSiteConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.MetadataTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.NodeTypeConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.NodeTypeTemplatesConfigurationHandler;
+import org.exoplatform.extension.generator.service.handler.RESTServicesFromIDEConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.ScriptsConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.SearchTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.SiteContentsConfigurationHandler;
@@ -41,6 +46,9 @@ import org.exoplatform.extension.generator.service.handler.SiteExplorerTemplates
 import org.exoplatform.extension.generator.service.handler.SiteExplorerViewConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.TaxonomyConfigurationHandler;
 import org.exoplatform.portal.mop.SiteType;
+import org.exoplatform.services.jcr.RepositoryService;
+import org.exoplatform.services.jcr.ext.script.groovy.GroovyScript2RestLoader;
+import org.exoplatform.services.jcr.ext.script.groovy.GroovyScript2RestLoader.ScriptList;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.gatein.management.api.ContentType;
@@ -81,6 +89,8 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     handlers.add(new TaxonomyConfigurationHandler());
     handlers.add(new SiteExplorerTemplatesConfigurationHandler());
     handlers.add(new SiteExplorerViewConfigurationHandler());
+    handlers.add(new RESTServicesFromIDEConfigurationHandler());
+    handlers.add(new GadgetsConfigurationHandler());
   }
 
   /**
@@ -217,6 +227,57 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   @Override
   public List<Node> getViewConfigurationNodes() {
     return getNodes(ECM_VIEW_CONFIGURATION_PATH);
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   */
+  @Override
+  public List<Node> getIDEGroovyRestServices() {
+    GroovyScript2RestLoader script2RestLoader = (GroovyScript2RestLoader) PortalContainer.getInstance().getComponentInstanceOfType(GroovyScript2RestLoader.class);
+    RepositoryService repositoryService = (RepositoryService) PortalContainer.getInstance().getComponentInstanceOfType(RepositoryService.class);
+    List<Node> nodes = new ArrayList<Node>();
+    try {
+      String repository = repositoryService.getCurrentRepository().getConfiguration().getName();
+      String[] workspaces = repositoryService.getCurrentRepository().getWorkspaceNames();
+      for (String workspace : workspaces) {
+        Response response = script2RestLoader.list(repository, workspace, null);
+        ScriptList scriptList = (ScriptList) response.getEntity();
+        List<String> list = scriptList.getList();
+        for (String scriptPath : list) {
+          String scriptName = scriptPath.substring(scriptPath.lastIndexOf("/") + 1);
+          Node node = new Node(scriptName, scriptPath, ExtensionGenerator.IDE_REST_PATH + workspace + "::" + scriptPath);
+          nodes.add(node);
+        }
+      }
+    } catch (Exception e) {
+      log.error("Error while getting the list of groovy REST services.", e);
+    }
+    return nodes;
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   */
+  @Override
+  public List<Node> getGadgets() {
+    GadgetRegistryService gadgetRegistryService = (GadgetRegistryService) PortalContainer.getInstance().getComponentInstanceOfType(GadgetRegistryService.class);
+    List<Node> nodes = new ArrayList<Node>();
+    try {
+      List<Gadget> gadgets = gadgetRegistryService.getAllGadgets();
+      for (Gadget gadget : gadgets) {
+        if (gadget.isLocal() || !gadget.getUrl().contains("/rest/jcr/repository/")) {
+          continue;
+        }
+        Node node = new Node(gadget.getTitle(), gadget.getDescription(), GADGET_PATH + gadget.getName());
+        nodes.add(node);
+      }
+    } catch (Exception e) {
+      log.error("Error while getting the list of groovy REST services.", e);
+    }
+    return nodes;
   }
 
   /**

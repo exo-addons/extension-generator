@@ -25,6 +25,8 @@ public interface ExtensionGenerator {
   public static final String ECM_VIEW_CONFIGURATION_PATH = "/ecmadmin/view/configuration";
   public static final String ECM_VIEW_TEMPLATES_PATH = "/ecmadmin/view/templates";
   public static final String REGISTRY_PATH = "/registry";
+  public static final String IDE_REST_PATH = "/ide/rest::";
+  public static final String GADGET_PATH = "/gadget::";
 
   /**
    * Returns the list of sub resources of MOP of type portalsites computed from
@@ -165,6 +167,20 @@ public interface ExtensionGenerator {
    * @return list of ECMS View Configuration managed paths.
    */
   List<Node> getViewConfigurationNodes();
+
+  /**
+   * Returns the list of groovy REST Services defined by IDE
+   * 
+   * @return list of ECMS View Configuration managed paths.
+   */
+  List<Node> getIDEGroovyRestServices();
+
+  /**
+   * Returns the list of groovy REST Services defined by IDE
+   * 
+   * @return list of ECMS View Configuration managed paths.
+   */
+  List<Node> getGadgets();
 
   /**
    * Generates the WAR Extension by including seleted managed paths to export

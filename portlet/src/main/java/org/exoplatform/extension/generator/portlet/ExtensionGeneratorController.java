@@ -62,6 +62,8 @@ public class ExtensionGeneratorController {
     parameters.put("registryPath", ExtensionGenerator.REGISTRY_PATH);
     parameters.put("viewTemplatePath", ExtensionGenerator.ECM_VIEW_TEMPLATES_PATH);
     parameters.put("viewConfigurationPath", ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH);
+    parameters.put("ideGroovyRestServicesPath", ExtensionGenerator.IDE_REST_PATH);
+    parameters.put("gadgetPath", ExtensionGenerator.GADGET_PATH);
   }
 
   @View
@@ -85,6 +87,8 @@ public class ExtensionGeneratorController {
     resources.put(ExtensionGenerator.REGISTRY_PATH, extensionGeneratorService.getRegistryNodes());
     resources.put(ExtensionGenerator.ECM_VIEW_TEMPLATES_PATH, extensionGeneratorService.getViewTemplatesNodes());
     resources.put(ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH, extensionGeneratorService.getViewConfigurationNodes());
+    resources.put(ExtensionGenerator.IDE_REST_PATH, extensionGeneratorService.getIDEGroovyRestServices());
+    resources.put(ExtensionGenerator.GADGET_PATH, extensionGeneratorService.getGadgets());
 
     // Set Nodes in parameters
     parameters.put("portalSiteNodes", resources.get(ExtensionGenerator.SITES_PORTAL_PATH));
@@ -104,6 +108,8 @@ public class ExtensionGeneratorController {
     parameters.put("registryNodes", resources.get(ExtensionGenerator.REGISTRY_PATH));
     parameters.put("viewTemplateNodes", resources.get(ExtensionGenerator.ECM_VIEW_TEMPLATES_PATH));
     parameters.put("viewConfigurationNodes", resources.get(ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH));
+    parameters.put("ideGroovyRestServicesNodes", resources.get(ExtensionGenerator.IDE_REST_PATH));
+    parameters.put("gadgetNodes", resources.get(ExtensionGenerator.GADGET_PATH));
 
     parameters.put("selectedResources", selectedResources);
 
@@ -124,6 +130,8 @@ public class ExtensionGeneratorController {
     parameters.put("registrySelectedNodes", getSelectedResources(ExtensionGenerator.REGISTRY_PATH));
     parameters.put("viewTemplateSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_VIEW_TEMPLATES_PATH));
     parameters.put("viewConfigurationSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH));
+    parameters.put("ideGroovyRestServicesSelectedNodes", getSelectedResources(ExtensionGenerator.IDE_REST_PATH));
+    parameters.put("gadgetSelectedNodes", getSelectedResources(ExtensionGenerator.GADGET_PATH));
 
     return index.ok(parameters);
   }
@@ -170,6 +178,8 @@ public class ExtensionGeneratorController {
     parameters.put("registrySelectedNodes", getSelectedResources(ExtensionGenerator.REGISTRY_PATH));
     parameters.put("viewTemplateSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_VIEW_TEMPLATES_PATH));
     parameters.put("viewConfigurationSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH));
+    parameters.put("ideGroovyRestServicesSelectedNodes", getSelectedResources(ExtensionGenerator.IDE_REST_PATH));
+    parameters.put("gadgetSelectedNodes", getSelectedResources(ExtensionGenerator.GADGET_PATH));
 
     form.render(parameters);
   }
