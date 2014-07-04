@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -23,7 +24,12 @@ import javax.ws.rs.core.Response;
 import org.exoplatform.application.gadget.Gadget;
 import org.exoplatform.application.gadget.GadgetRegistryService;
 import org.exoplatform.container.PortalContainer;
+import org.exoplatform.container.configuration.ConfigurationManager;
+import org.exoplatform.container.xml.Component;
+import org.exoplatform.container.xml.ComponentPlugin;
 import org.exoplatform.container.xml.Configuration;
+import org.exoplatform.container.xml.ExternalComponentPlugins;
+import org.exoplatform.container.xml.PropertiesParam;
 import org.exoplatform.extension.generator.service.api.ConfigurationHandler;
 import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
 import org.exoplatform.extension.generator.service.api.Node;
@@ -49,6 +55,7 @@ import org.exoplatform.portal.mop.SiteType;
 import org.exoplatform.services.jcr.RepositoryService;
 import org.exoplatform.services.jcr.ext.script.groovy.GroovyScript2RestLoader;
 import org.exoplatform.services.jcr.ext.script.groovy.GroovyScript2RestLoader.ScriptList;
+import org.exoplatform.services.jcr.ext.script.groovy.GroovyScript2RestLoaderPlugin;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 import org.gatein.management.api.ContentType;
@@ -238,6 +245,8 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     GroovyScript2RestLoader script2RestLoader = (GroovyScript2RestLoader) PortalContainer.getInstance().getComponentInstanceOfType(GroovyScript2RestLoader.class);
     RepositoryService repositoryService = (RepositoryService) PortalContainer.getInstance().getComponentInstanceOfType(RepositoryService.class);
     List<Node> nodes = new ArrayList<Node>();
+
+    Set<String> predefinedScripts = getPredefinedScripts();
     try {
       String repository = repositoryService.getCurrentRepository().getConfiguration().getName();
       String[] workspaces = repositoryService.getCurrentRepository().getWorkspaceNames();
@@ -246,8 +255,12 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
         ScriptList scriptList = (ScriptList) response.getEntity();
         List<String> list = scriptList.getList();
         for (String scriptPath : list) {
+          String scriptCompletePath = workspace + "::" + scriptPath;
+          if (predefinedScripts.contains(scriptCompletePath)) {
+            continue;
+          }
           String scriptName = scriptPath.substring(scriptPath.lastIndexOf("/") + 1);
-          Node node = new Node(scriptName, scriptPath, ExtensionGenerator.IDE_REST_PATH + workspace + "::" + scriptPath);
+          Node node = new Node(scriptName, scriptPath, ExtensionGenerator.IDE_REST_PATH + scriptCompletePath);
           nodes.add(node);
         }
       }
@@ -408,6 +421,41 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
       children.add(parent);
     }
     return children;
+  }
+
+  private Set<String> getPredefinedScripts() {
+    Set<String> predefinedScripts = new HashSet<String>();
+    addPredefinedScriptsForComponent(predefinedScripts, GroovyScript2RestLoader.class.getName());
+    addPredefinedScriptsForComponent(predefinedScripts, "org.exoplatform.platform.gadget.services.GroovyScript2RestLoader.GroovyScript2RestLoaderExt");
+    return predefinedScripts;
+  }
+
+  private void addPredefinedScriptsForComponent(Set<String> predefinedScripts, String groovyScript2RestLoaderClassName) {
+    ConfigurationManager configurationManager = (ConfigurationManager) PortalContainer.getInstance().getComponentInstanceOfType(ConfigurationManager.class);
+    ExternalComponentPlugins plugins = configurationManager.getConfiguration().getExternalComponentPlugins(groovyScript2RestLoaderClassName);
+    if (plugins != null) {
+      List<ComponentPlugin> componentPlugins = plugins.getComponentPlugins();
+      addPredefinedScripts(predefinedScripts, componentPlugins);
+    }
+    Component component = configurationManager.getConfiguration().getComponent(groovyScript2RestLoaderClassName);
+    addPredefinedScripts(predefinedScripts, component.getComponentPlugins());
+  }
+
+  private void addPredefinedScripts(Set<String> predefinedScripts, List<ComponentPlugin> componentPlugins) {
+    if (componentPlugins == null || componentPlugins.isEmpty()) {
+      return;
+    }
+    for (ComponentPlugin componentPlugin : componentPlugins) {
+      if (componentPlugin.getInitParams() != null && componentPlugin.getType().equals(GroovyScript2RestLoaderPlugin.class.getName()) && componentPlugin.getInitParams().containsKey("workspace")) {
+        String workspace = componentPlugin.getInitParams().getValueParam("workspace").getValue();
+        Iterator<?> scriptsDefinition = componentPlugin.getInitParams().getPropertiesParamIterator();
+        while (scriptsDefinition.hasNext()) {
+          PropertiesParam propertiesParam = (PropertiesParam) scriptsDefinition.next();
+          String path = componentPlugin.getInitParams().getValueParam("node").getValue() + "/" + propertiesParam.getName();
+          predefinedScripts.add(workspace + "::" + path);
+        }
+      }
+    }
   }
 
   private ManagementController getManagementController() {

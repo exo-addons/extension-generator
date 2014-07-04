@@ -47,7 +47,7 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
     try {
       String repository = repositoryService.getCurrentRepository().getConfiguration().getName();
 
-      StringBuilder gadgetsConfiguration = new StringBuilder("<gadgets>");
+      StringBuilder gadgetsConfiguration = new StringBuilder("<gadgets>\r\n");
       for (String selectedResoucePath : filteredSelectedResources) {
         selectedResoucePath = selectedResoucePath.replace(ExtensionGenerator.GADGET_PATH, "");
         Gadget gadget = gadgetRegistryService.getGadget(selectedResoucePath);
@@ -79,8 +79,8 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
         String xmlPath = GADGETS_LOCATION + "/" + gadgetXMLNode.getPath().replaceFirst(parentPath, "");
 
         gadgetsConfiguration.append(" <gadget name=\"").append(gadget.getName()).append("\">");
-        gadgetsConfiguration.append("\r\n").append("   <path>/").append(xmlPath).append("</path>").append("\r\n");
-        gadgetsConfiguration.append(" </gadget>");
+        gadgetsConfiguration.append("\r\n   <path>/").append(xmlPath).append("</path>\r\n");
+        gadgetsConfiguration.append(" </gadget>\r\n");
       }
       gadgetsConfiguration.append("</gadgets>");
       Utils.writeZipEnry(zos, GADGETS_CONFIGURATION_PATH, extensionName, gadgetsConfiguration.toString(), false);
