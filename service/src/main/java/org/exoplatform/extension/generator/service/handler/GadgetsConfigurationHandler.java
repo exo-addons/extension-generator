@@ -74,13 +74,8 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
 
         String parentPath = gadgetParentNode.getParent().getPath();
 
-        NodeIterator nodeIterator = gadgetParentNode.getNodes();
-        while (nodeIterator.hasNext()) {
-          Node node = nodeIterator.nextNode();
-          String filePath = GADGETS_LOCATION + "/" + node.getPath().replaceFirst(parentPath, "");
-          filePath.replaceAll("//", "/");
-          Utils.writeZipEnry(zos, filePath, extensionName, getContent(node), false);
-        }
+        writeFileNode(gadgetParentNode, parentPath, zos, extensionName);
+
         String xmlPath = GADGETS_LOCATION + "/" + gadgetXMLNode.getPath().replaceFirst(parentPath, "");
 
         gadgetsConfiguration.append(" <gadget name=\"").append(gadget.getName()).append("\">");
@@ -93,6 +88,20 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
     } catch (Exception e) {
       getLogger().error(e);
       return false;
+    }
+  }
+
+  private void writeFileNode(Node gadgetFileNode, String parentPath, ZipOutputStream zos, String extensionName) throws Exception {
+    NodeIterator nodeIterator = gadgetFileNode.getNodes();
+    while (nodeIterator.hasNext()) {
+      Node node = nodeIterator.nextNode();
+      if (node.isNodeType("nt:file")) {
+        String filePath = GADGETS_LOCATION + "/" + node.getPath().replaceFirst(parentPath, "");
+        filePath.replaceAll("//", "/");
+        Utils.writeZipEnry(zos, filePath, extensionName, getContent(node), false);
+      } else if (node.isNodeType("nt:folder")) {
+        writeFileNode(node, parentPath, zos, extensionName);
+      }
     }
   }
 

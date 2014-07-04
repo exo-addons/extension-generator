@@ -96,7 +96,7 @@
 										<%=computeContent(viewTemplateNodes,"viewTemplate", "Sites Explorer View Templates",viewTemplatePath)%>
 										<%=computeContent(viewConfigurationNodes,"viewConfiguration", "Sites Explorer View Configuration",viewConfigurationPath)%>
 										<%=computeContent(ideGroovyRestServicesNodes,"ideGroovyRestServices", "IDE Rest Services",ideGroovyRestServicesPath)%>
-										<%=computeContent(gadgetNodes,"gadget", "Gadgets",gadgetPath)%>
+										<%=computeContent(gadgetNodes,"gadget", "IDE Gadgets",gadgetPath)%>
 									</ul>
 								</div>
 							</div>

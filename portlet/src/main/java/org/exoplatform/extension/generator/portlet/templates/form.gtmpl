@@ -38,5 +38,5 @@
 	  addSelectedContent(viewTemplateSelectedNodes, "viewTemplatesSelectedResources", "View Templates");
 	  addSelectedContent(viewConfigurationSelectedNodes, "viewConfigurationSelectedResources", "View Configuration");
 	  addSelectedContent(ideGroovyRestServicesSelectedNodes, "ideGroovyRestServicesSelectedResources", "IDE Rest Services");
-	  addSelectedContent(gadgetSelectedNodes, "gadgetSelectedResources", "Gadgets");
+	  addSelectedContent(gadgetSelectedNodes, "gadgetSelectedResources", "IDE Gadgets");
 %>
