@@ -65,6 +65,7 @@ import org.gatein.management.api.controller.ManagedResponse;
 import org.gatein.management.api.controller.ManagementController;
 import org.gatein.management.api.operation.OperationNames;
 import org.gatein.management.api.operation.model.ReadResourceModel;
+import org.picocontainer.ComponentAdapter;
 
 @Singleton
 public class ExtensionGeneratorImpl implements ExtensionGenerator {
@@ -281,7 +282,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     try {
       List<Gadget> gadgets = gadgetRegistryService.getAllGadgets();
       for (Gadget gadget : gadgets) {
-        if (gadget.isLocal() || !gadget.getUrl().contains("/rest/jcr/repository/")) {
+        if (!gadget.isLocal() && !gadget.getUrl().contains("jcr/repository")) {
           continue;
         }
         Node node = new Node(gadget.getTitle(), gadget.getDescription(), GADGET_PATH + gadget.getName());
@@ -432,13 +433,32 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
 
   private void addPredefinedScriptsForComponent(Set<String> predefinedScripts, String groovyScript2RestLoaderClassName) {
     ConfigurationManager configurationManager = (ConfigurationManager) PortalContainer.getInstance().getComponentInstanceOfType(ConfigurationManager.class);
-    ExternalComponentPlugins plugins = configurationManager.getConfiguration().getExternalComponentPlugins(groovyScript2RestLoaderClassName);
+    Class<?> groovyScript2RestLoaderClass = null;
+    try {
+      ComponentAdapter componentAdapter = PortalContainer.getInstance().getComponentAdapterOfType(Class.forName(groovyScript2RestLoaderClassName));
+      if(componentAdapter != null) {
+        groovyScript2RestLoaderClass = (Class<?>) componentAdapter.getComponentKey();
+      }
+    } catch (ClassNotFoundException e) {
+      // nothing to display, Platform gadgets are disabled
+    } catch (Exception e) {
+      log.warn("Operation Error - Compute Predefined Groovy scripts : '" + groovyScript2RestLoaderClassName + "' Component was not found.");
+    }
+    if(groovyScript2RestLoaderClass == null) {
+      return;
+    }
+
+    ExternalComponentPlugins plugins = configurationManager.getConfiguration().getExternalComponentPlugins(groovyScript2RestLoaderClass.getName());
     if (plugins != null) {
       List<ComponentPlugin> componentPlugins = plugins.getComponentPlugins();
-      addPredefinedScripts(predefinedScripts, componentPlugins);
+      if (componentPlugins != null && !componentPlugins.isEmpty()) {
+        addPredefinedScripts(predefinedScripts, componentPlugins);
+      }
     }
-    Component component = configurationManager.getConfiguration().getComponent(groovyScript2RestLoaderClassName);
-    addPredefinedScripts(predefinedScripts, component.getComponentPlugins());
+    Component component = configurationManager.getConfiguration().getComponent(groovyScript2RestLoaderClass.getName());
+    if (component.getComponentPlugins() != null && !component.getComponentPlugins().isEmpty()) {
+      addPredefinedScripts(predefinedScripts, component.getComponentPlugins());
+    }
   }
 
   private void addPredefinedScripts(Set<String> predefinedScripts, List<ComponentPlugin> componentPlugins) {
