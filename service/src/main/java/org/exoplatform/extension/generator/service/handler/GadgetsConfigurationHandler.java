@@ -47,7 +47,10 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
     try {
       String repository = repositoryService.getCurrentRepository().getConfiguration().getName();
 
-      StringBuilder gadgetsConfiguration = new StringBuilder("<gadgets>\r\n");
+      StringBuilder gadgetsConfiguration = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+      gadgetsConfiguration.append("<gadgets\r\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n");
+      gadgetsConfiguration.append("\txsi:schemaLocation=\"http://www.gatein.org/xml/ns/gatein_objects_1_0 http://www.gatein.org/xml/ns/gadgets_1_0\"\r\n");
+      gadgetsConfiguration.append("\txmlns=\"http://www.gatein.org/xml/ns/gadgets_1_0\">\r\n");
       for (String selectedResoucePath : filteredSelectedResources) {
         selectedResoucePath = selectedResoucePath.replace(ExtensionGenerator.GADGET_PATH, "");
         Gadget gadget = gadgetRegistryService.getGadget(selectedResoucePath);
