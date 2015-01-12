@@ -86,6 +86,7 @@ public class Utils {
   }
 
   public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, InputStream inputStream, boolean changeContent) throws Exception {
+    entryName = entryName.replaceAll("/ecmadmin", "");
     if (changeContent) {
       String content = IOUtils.toString(inputStream);
       writeZipEnry(zos, entryName, extensionName, content, true);

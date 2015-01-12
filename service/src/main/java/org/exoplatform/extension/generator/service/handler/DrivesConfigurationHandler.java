@@ -16,7 +16,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
 public class DrivesConfigurationHandler extends AbstractConfigurationHandler {
-  private static final String DRIVE_CONFIGURATION_LOCATION_FROM_EXPORT = "drive/drives-configuration.xml";
+  private static final String DRIVE_CONFIGURATION_LOCATION_FROM_EXPORT = "ecmadmin/drive/drives-configuration.xml";
   private final List<String> configurationPaths = new ArrayList<String>();
 
   private Log log = ExoLogger.getLogger(this.getClass());

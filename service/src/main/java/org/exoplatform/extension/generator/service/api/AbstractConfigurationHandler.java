@@ -168,7 +168,7 @@ public abstract class AbstractConfigurationHandler implements ConfigurationHandl
   }
 
   protected ApplicationTemplatesMetadata getApplicationTemplatesMetadata(ZipFile zipFile) {
-    ZipEntry applicationTemplateMetadataEntry = zipFile.getEntry("templates/applications/metadata.xml");
+    ZipEntry applicationTemplateMetadataEntry = zipFile.getEntry("ecmadmin/templates/applications/metadata.xml");
     if (applicationTemplateMetadataEntry != null) {
       try {
         InputStream inputStream = zipFile.getInputStream(applicationTemplateMetadataEntry);

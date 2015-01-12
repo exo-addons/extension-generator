@@ -83,7 +83,7 @@ public abstract class ApplicationTemplatesConfigurationHandler extends AbstractC
       templateConfig.setCategory(paths[0]);
       templateConfig.setTemplateName(paths[1]);
 
-      String relativePath = selectedResourcePath.replace("/ecmadmin/", "");
+      String relativePath = selectedResourcePath.replaceAll("/ecmadmin/", "");
 
       String templateTitle = templateConfig.getTemplateName();
       if (metadata != null && metadata.getTitle(relativePath) != null) {

@@ -44,53 +44,64 @@ public class SiteExplorerTemplatesConfigurationHandler extends AbstractConfigura
     if (filteredSelectedResources.isEmpty()) {
       return false;
     }
+    List<String> filterViews = new ArrayList<String>();
+    for (String resourcePath : filteredSelectedResources) {
+      String viewName = resourcePath.replace(ExtensionGenerator.ECM_VIEW_TEMPLATES_PATH + "/", "");
+      filterViews.add(viewName);
+    }
+
     InitParams allParams = null;
     // Copy gtmpl in WAR and get all initParams in a single one
-    for (String selectedResource : filteredSelectedResources) {
-      ZipFile zipFile = getExportedFileFromOperation(selectedResource);
-      try {
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-          ZipEntry entry = (ZipEntry) entries.nextElement();
-          String filePath = entry.getName();
-          if (!filePath.startsWith("view/")) {
-            continue;
-          }
-          // Skip directories
-          // & Skip empty entries
-          // & Skip entries not in sites/zip
-          if (entry.isDirectory() || filePath.trim().isEmpty() || !(filePath.endsWith(".gtmpl") || filePath.endsWith(".xml"))) {
-            continue;
-          }
-          InputStream inputStream = zipFile.getInputStream(entry);
-          if (filePath.endsWith(".gtmpl")) {
-            String location = VIEW_TEMPLATES_LOCATION + "/" + extractTemplateName(filePath);
-            Utils.writeZipEnry(zos, location, extensionName, inputStream, false);
-          } else if (filePath.endsWith(".xml")) {
+    ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_VIEW_TEMPLATES_PATH, filterViews.toArray(new String[0]));
+    try {
+      Enumeration<? extends ZipEntry> entries = zipFile.entries();
+      while (entries.hasMoreElements()) {
+        ZipEntry entry = (ZipEntry) entries.nextElement();
+        String filePath = entry.getName();
+        if (!filePath.startsWith("ecmadmin/view/")) {
+          continue;
+        }
+        // Skip directories
+        // & Skip empty entries
+        // & Skip entries not in sites/zip
+        if (entry.isDirectory() || filePath.trim().isEmpty() || !(filePath.endsWith(".gtmpl") || filePath.endsWith(".xml"))) {
+          continue;
+        }
+        InputStream inputStream = zipFile.getInputStream(entry);
+        if (filePath.endsWith(".gtmpl")) {
+          String location = VIEW_TEMPLATES_LOCATION + "/" + extractTemplateName(filePath);
+          Utils.writeZipEnry(zos, location, extensionName, inputStream, false);
+        } else if (filePath.endsWith(".xml")) {
+          if (log.isDebugEnabled()) {
             log.debug("Parsing : " + filePath);
+          }
 
-            InitParams initParams = Utils.fromXML(IOUtils.toByteArray(inputStream), InitParams.class);
-            if (allParams == null) {
-              allParams = initParams;
-            } else {
-              @SuppressWarnings("unchecked")
-              Iterator<ObjectParameter> iterator = initParams.getObjectParamIterator();
-              while (iterator.hasNext()) {
-                ObjectParameter objectParameter = (ObjectParameter) iterator.next();
-                allParams.addParameter(objectParameter);
-              }
+          InitParams initParams = Utils.fromXML(IOUtils.toByteArray(inputStream), InitParams.class);
+          if (allParams == null) {
+            allParams = initParams;
+          } else {
+            @SuppressWarnings("unchecked")
+            Iterator<ObjectParameter> iterator = initParams.getObjectParamIterator();
+            while (iterator.hasNext()) {
+              ObjectParameter objectParameter = (ObjectParameter) iterator.next();
+              allParams.addParameter(objectParameter);
             }
           }
         }
-      } catch (Exception e) {
-        log.error("Error iccured while handling view templates", e);
-        throw new RuntimeException(e);
-      } finally {
-        clearTempFiles();
       }
+    } catch (Exception e) {
+      log.error("Error iccured while handling view templates", e);
+      throw new RuntimeException(e);
+    } finally {
+      clearTempFiles();
+    }
+
+    if (allParams == null) {
+      return false;
     }
 
     ExternalComponentPlugins externalComponentPlugins = new ExternalComponentPlugins();
+
     // Add constant init params
     allParams.addParam(getValueParam("autoCreateInNewRepository", "true"));
     allParams.addParam(getValueParam("predefinedViewsLocation", VIEW_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName)));

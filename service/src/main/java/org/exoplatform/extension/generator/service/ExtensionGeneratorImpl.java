@@ -350,15 +350,19 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
 
     Configuration configuration = new Configuration();
     for (ConfigurationHandler configurationHandler : handlers) {
-      boolean extracted = configurationHandler.writeData(zos, extensionName, tempSelectedResources);
-      if (extracted) {
-        List<String> configurationPaths = configurationHandler.getConfigurationPaths();
-        if (configurationPaths != null) {
-          for (String path : configurationPaths) {
-            path = path.replace("custom-extension", extensionName);
-            configuration.addImport(path);
+      try {
+        boolean extracted = configurationHandler.writeData(zos, extensionName, tempSelectedResources);
+        if (extracted) {
+          List<String> configurationPaths = configurationHandler.getConfigurationPaths();
+          if (configurationPaths != null) {
+            for (String path : configurationPaths) {
+              path = path.replace("custom-extension", extensionName);
+              configuration.addImport(path);
+            }
           }
         }
+      } catch (Exception e) {
+        log.error("Error while handling resources for " + configurationHandler.getClass().getName(), e);
       }
     }
 
@@ -436,7 +440,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     Class<?> groovyScript2RestLoaderClass = null;
     try {
       ComponentAdapter componentAdapter = PortalContainer.getInstance().getComponentAdapterOfType(Class.forName(groovyScript2RestLoaderClassName));
-      if(componentAdapter != null) {
+      if (componentAdapter != null) {
         groovyScript2RestLoaderClass = (Class<?>) componentAdapter.getComponentKey();
       }
     } catch (ClassNotFoundException e) {
@@ -444,7 +448,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     } catch (Exception e) {
       log.warn("Operation Error - Compute Predefined Groovy scripts : '" + groovyScript2RestLoaderClassName + "' Component was not found.");
     }
-    if(groovyScript2RestLoaderClass == null) {
+    if (groovyScript2RestLoaderClass == null) {
       return;
     }
 
