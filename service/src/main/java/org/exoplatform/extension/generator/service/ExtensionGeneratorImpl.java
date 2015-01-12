@@ -246,6 +246,9 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     GroovyScript2RestLoader script2RestLoader = (GroovyScript2RestLoader) PortalContainer.getInstance().getComponentInstanceOfType(GroovyScript2RestLoader.class);
     RepositoryService repositoryService = (RepositoryService) PortalContainer.getInstance().getComponentInstanceOfType(RepositoryService.class);
     List<Node> nodes = new ArrayList<Node>();
+    if (script2RestLoader == null) {
+      return nodes;
+    }
 
     Set<String> predefinedScripts = getPredefinedScripts();
     try {
@@ -279,6 +282,10 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   public List<Node> getGadgets() {
     GadgetRegistryService gadgetRegistryService = (GadgetRegistryService) PortalContainer.getInstance().getComponentInstanceOfType(GadgetRegistryService.class);
     List<Node> nodes = new ArrayList<Node>();
+    if (gadgetRegistryService == null) {
+      return nodes;
+    }
+
     try {
       List<Gadget> gadgets = gadgetRegistryService.getAllGadgets();
       for (Gadget gadget : gadgets) {
