@@ -83,6 +83,7 @@ public class Utils {
       writeZipEnry(zos, targetEntryName, extensionName, zin, true);
     }
     zos.flush();
+    zin.close();
   }
 
   public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, InputStream inputStream, boolean changeContent) throws Exception {
@@ -94,6 +95,7 @@ public class Utils {
       entryName = entryName.replace("custom-extension", extensionName);
       writeZipEnry(zos, entryName, IOUtils.toByteArray(inputStream));
     }
+    inputStream.close();
   }
 
   public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, String content, boolean changeContent) throws Exception {

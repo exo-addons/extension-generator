@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.FileUtils;
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.xml.ComponentPlugin;
 import org.exoplatform.container.xml.ExternalComponentPlugins;
@@ -39,7 +40,7 @@ public abstract class AbstractConfigurationHandler implements ConfigurationHandl
   // GateIN Management Controller
   private ManagementController managementController = null;
 
-  private List<File> tempFiles = new ArrayList<File>();
+  protected List<File> tempFiles = new ArrayList<File>();
 
   protected abstract Log getLogger();
 
@@ -69,13 +70,12 @@ public abstract class AbstractConfigurationHandler implements ConfigurationHandl
       ManagedResponse response = getManagementController().execute(request);
 
       // Create temp file
-      tmpFile = File.createTempFile("exo", "-extension-generator");
-      tmpFile.deleteOnExit();
+      tmpFile = File.createTempFile("exo", "-extension-generator.zip");
       outputStream = new FileOutputStream(tmpFile);
       tempFiles.add(tmpFile);
 
       // Create temp file
-      response.writeResult(outputStream);
+      response.writeResult(outputStream, false);
       outputStream.flush();
       outputStream.close();
 
@@ -104,7 +104,12 @@ public abstract class AbstractConfigurationHandler implements ConfigurationHandl
   protected void clearTempFiles() {
     for (File tempFile : tempFiles) {
       if (tempFile != null && tempFile.exists()) {
-        tempFile.delete();
+        try {
+          FileUtils.forceDelete(tempFile);
+        } catch (Exception e) {
+          getLogger().warn("Unable to delete temp file: " + tempFile.getAbsolutePath() + ". Not blocker.");
+          tempFile.deleteOnExit();
+        }
       }
     }
   }

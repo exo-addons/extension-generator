@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ import java.util.zip.ZipOutputStream;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.FileUtils;
 import org.exoplatform.application.gadget.Gadget;
 import org.exoplatform.application.gadget.GadgetRegistryService;
 import org.exoplatform.container.PortalContainer;
@@ -73,7 +75,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   private static final String WEB_XML_TEMPLATE_LOCATION = "generator/template/web.xml";
   private static final String CONFIGURATION_XML_LOCATION = "WEB-INF/conf/configuration.xml";
 
-  private Log log = ExoLogger.getLogger(this.getClass());
+  private static final Log log = ExoLogger.getLogger(ExtensionGeneratorImpl.class);
 
   private ManagementController managementController = null;
 
@@ -308,14 +310,14 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   @Override
   public InputStream generateExtensionZip(String extensionName, Set<String> selectedResources) throws Exception {
     File file = File.createTempFile("CustomExtension", ".zip");
-    file.deleteOnExit();
     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
+
     // Put WAR file
     Utils.writeZipEnry(zos, "webapps/" + extensionName + ".war", extensionName, generateWARExtension(extensionName, selectedResources), false);
     // Put JAR file
     Utils.writeZipEnry(zos, "lib/" + extensionName + "-config.jar", extensionName, generateActiovationJar(extensionName), false);
     zos.close();
-    return new FileInputStream(file);
+    return new ClosableFileInputStream(file);
   }
 
   /**
@@ -325,7 +327,6 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   @Override
   public InputStream generateExtensionMavenProject(String extensionName, Set<String> selectedResources) throws Exception {
     File zipFile = File.createTempFile("Maven-CustomExtension", ".zip");
-    zipFile.deleteOnExit();
     ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
 
     // Copy Zip file containing Maven Project Structure in Temp File
@@ -341,7 +342,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     Utils.copyZipEnries(new ZipInputStream(warInputStream), zipOutputStream, extensionName, "war/src/main/webapp");
 
     zipOutputStream.close();
-    return new FileInputStream(zipFile);
+    return new ClosableFileInputStream(zipFile);
   }
 
   /**
@@ -351,7 +352,6 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   @Override
   public InputStream generateWARExtension(String extensionName, Set<String> selectedResources) throws Exception {
     File file = File.createTempFile(extensionName, ".war");
-    file.deleteOnExit();
     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
     Vector<String> tempSelectedResources = new Vector<String>(selectedResources);
 
@@ -387,7 +387,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
       log.error("Error while closing ZipOutputStream.", e);
     }
 
-    return new FileInputStream(file);
+    return new ClosableFileInputStream(file);
   }
 
   @Override
@@ -496,4 +496,23 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     return managementController;
   }
 
+  public static class ClosableFileInputStream extends FileInputStream {
+    File file;
+
+    public ClosableFileInputStream(File file) throws FileNotFoundException {
+      super(file);
+      this.file = file;
+    }
+
+    @Override
+    public void close() throws IOException {
+      super.close();
+      try {
+        FileUtils.forceDelete(file);
+      } catch (Exception e) {
+        log.warn("Cannot delete file: " + file.getName());
+        file.deleteOnExit();
+      }
+    }
+  }
 }

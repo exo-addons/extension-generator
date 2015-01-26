@@ -88,6 +88,7 @@ public class SiteExplorerTemplatesConfigurationHandler extends AbstractConfigura
             }
           }
         }
+        inputStream.close();
       }
     } catch (Exception e) {
       log.error("Error iccured while handling view templates", e);
