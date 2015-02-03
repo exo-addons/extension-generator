@@ -50,6 +50,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.exoplatform.addons.staging</groupId>
+			<artifactId>staging-extension-common</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.exoplatform.addons.staging</groupId>
 			<artifactId>staging-extension-organization</artifactId>
 			<scope>provided</scope>
 		</dependency>
