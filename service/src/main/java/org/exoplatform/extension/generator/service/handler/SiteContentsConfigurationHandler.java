@@ -24,8 +24,8 @@ import org.exoplatform.container.xml.ValuesParam;
 import org.exoplatform.extension.generator.service.api.AbstractConfigurationHandler;
 import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
 import org.exoplatform.extension.generator.service.api.Utils;
+import org.exoplatform.management.common.activities.JCRNodeExportTask;
 import org.exoplatform.management.content.operations.site.SiteConstants;
-import org.exoplatform.management.content.operations.site.contents.SiteData;
 import org.exoplatform.management.content.operations.site.contents.SiteMetaData;
 import org.exoplatform.services.deployment.DeploymentDescriptor;
 import org.exoplatform.services.deployment.DeploymentDescriptor.Target;
@@ -39,8 +39,8 @@ import org.exoplatform.services.wcm.portal.artifacts.IgnorePortalPlugin;
 import com.thoughtworks.xstream.XStream;
 
 public class SiteContentsConfigurationHandler extends AbstractConfigurationHandler {
-  private static final String WCM_CONTENT_CONFIGURATION_LOCATION = "WEB-INF/conf/custom-extension/wcm/content/";
-  private static final String WCM_CONTENT_CONFIGURATION_NAME = "content-artifacts-deployment-configuration.xml";
+  private static final String WCM_CONTENT_CONFIGURATION_LOCATION = "WEB-INF/conf/custom-extension/wcm/content";
+  private static final String WCM_CONTENT_CONFIGURATION_NAME = "/content-artifacts-deployment-configuration.xml";
   private static final List<String> configurationPaths = new ArrayList<String>();
   static {
     configurationPaths.add(WCM_CONTENT_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + WCM_CONTENT_CONFIGURATION_NAME);
@@ -57,7 +57,8 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
       return false;
     }
 
-    Map<String, SiteData> sitesData = new HashMap<String, SiteData>();
+    Map<String, SiteMetaData> siteMetadatas = new HashMap<String, SiteMetaData>();
+    Map<String, List<String>> siteContentsLocation = new HashMap<String, List<String>>();
     try {
       for (String filteredResource : filteredSelectedResources) {
         String[] filters = new String[3];
@@ -77,20 +78,22 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
               XStream xstream = new XStream();
               xstream.alias("metadata", SiteMetaData.class);
               InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
-              SiteMetaData siteMetadata = (SiteMetaData) xstream.fromXML(isr);
-
+              siteMetadatas.put(siteName, (SiteMetaData) xstream.fromXML(isr));
               // Save unmarshalled metadata
-              SiteData siteData = sitesData.get(siteName);
-              if (siteData == null) {
-                siteData = new SiteData();
-              }
-              siteData.setSiteMetadata(siteMetadata);
-              sitesData.put(siteName, siteData);
             } else if (zipEntry.getName().endsWith("seo.xml")) {
               continue;
             } else {
-              String location = zipEntry.getName();
-              location = location.substring(location.lastIndexOf("/" + siteName + "/") + 1);
+              String[] fileParts = zipEntry.getName().split(JCRNodeExportTask.JCR_DATA_SEPARATOR);
+              if (fileParts.length != 2) {
+                log.warn("Cannot parse file: " + zipEntry.getName());
+                continue;
+              }
+              List<String> siteContentLocation = siteContentsLocation.get(siteName);
+              if (siteContentLocation == null) {
+                siteContentLocation = siteContentsLocation.put(siteName, new ArrayList<String>());
+              }
+              String location = fileParts[1];
+              siteContentLocation.add(location);
               Utils.writeZipEnry(zos, WCM_CONTENT_CONFIGURATION_LOCATION + location, extensionName, inputStream, false);
             }
           } catch (Exception e) {
@@ -108,7 +111,7 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
       InitParams params = new InitParams();
       ValuesParam valuesParam = new ValuesParam();
       valuesParam.setName("autoCreatedInNewRepository");
-      ArrayList<String> ignoredSitesList = new ArrayList<String>(sitesData.keySet());
+      ArrayList<String> ignoredSitesList = new ArrayList<String>(siteMetadatas.keySet());
       ignoredSitesList.remove("shared");
       valuesParam.setValues(ignoredSitesList);
       params.addParam(valuesParam);
@@ -117,33 +120,26 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
     }
 
     ExternalComponentPlugins contentExternalComponentPlugins = new ExternalComponentPlugins();
-    Set<Entry<String, SiteData>> sitesDataSet = sitesData.entrySet();
-    for (Entry<String, SiteData> siteDataEntry : sitesDataSet) {
+    Set<Entry<String, SiteMetaData>> sitesDataSet = siteMetadatas.entrySet();
+    for (Entry<String, SiteMetaData> siteDataEntry : sitesDataSet) {
       InitParams params = new InitParams();
       ComponentPlugin plugin = createComponentPlugin(siteDataEntry.getKey() + " Content Initializer Service", XMLDeploymentPlugin.class.getName(), "addPlugin", params);
       addComponentPlugin(contentExternalComponentPlugins, WCMContentInitializerService.class.getName(), plugin);
 
-      SiteData siteData = siteDataEntry.getValue();
-      String siteName = siteData.getSiteMetadata().getOptions().get("site-name");
+      SiteMetaData siteData = siteDataEntry.getValue();
+      String siteName = siteData.getOptions().get("site-name");
 
-      Set<Map.Entry<String, String>> exportedFilesEntrySet = siteData.getSiteMetadata().getExportedFiles().entrySet();
-      for (Entry<String, String> exportedFileEntry : exportedFilesEntrySet) {
+      List<String> exportedFiles = siteContentsLocation.get(siteName);
+      for (String location : exportedFiles) {
         DeploymentDescriptor deploymentDescriptor = new DeploymentDescriptor();
         deploymentDescriptor.setCleanupPublication(true);
-        String location = exportedFileEntry.getKey();
-        location = location.substring(location.lastIndexOf("/" + siteName + "/") + 1);
         String xmlLocation = WCM_CONTENT_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName) + location;
 
-        // Replace ".xml" by "_VersionHistory.zip"
-        // String versionHistoryLocation = xmlLocation.substring(0,
-        // xmlLocation.length() - 4) + "_VersionHistory.zip";
-
         deploymentDescriptor.setSourcePath(xmlLocation);
-        // deploymentDescriptor.setVersionHistoryPath(versionHistoryLocation);
 
         Target target = new Target();
-        target.setWorkspace(siteData.getSiteMetadata().getOptions().get("site-workspace"));
-        target.setNodePath(exportedFileEntry.getValue());
+        target.setWorkspace(siteData.getOptions().get("site-workspace"));
+        target.setNodePath(location);
         deploymentDescriptor.setTarget(target);
 
         ObjectParameter objectParameter = new ObjectParameter();
