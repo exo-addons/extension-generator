@@ -80,13 +80,17 @@ public class Utils {
       if (targetEntryName.startsWith("/")) {
         targetEntryName = targetEntryName.substring(1);
       }
-      writeZipEnry(zos, targetEntryName, extensionName, zin, true);
+      writeZipEnry(zos, targetEntryName, extensionName, zin, true, false);
     }
     zos.flush();
     zin.close();
   }
 
   public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, InputStream inputStream, boolean changeContent) throws Exception {
+    writeZipEnry(zos, entryName, extensionName, inputStream, changeContent, true);
+  }
+
+  public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, InputStream inputStream, boolean changeContent, boolean closeInputStream) throws Exception {
     entryName = entryName.replaceAll("/ecmadmin", "");
     if (changeContent) {
       String content = IOUtils.toString(inputStream);
@@ -95,7 +99,9 @@ public class Utils {
       entryName = entryName.replace("custom-extension", extensionName);
       writeZipEnry(zos, entryName, IOUtils.toByteArray(inputStream));
     }
-    inputStream.close();
+    if (closeInputStream) {
+      inputStream.close();
+    }
   }
 
   public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, String content, boolean changeContent) throws Exception {

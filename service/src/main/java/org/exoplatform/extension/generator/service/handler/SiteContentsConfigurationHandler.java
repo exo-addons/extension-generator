@@ -20,6 +20,7 @@ import org.exoplatform.container.xml.Configuration;
 import org.exoplatform.container.xml.ExternalComponentPlugins;
 import org.exoplatform.container.xml.InitParams;
 import org.exoplatform.container.xml.ObjectParameter;
+import org.exoplatform.container.xml.ValueParam;
 import org.exoplatform.container.xml.ValuesParam;
 import org.exoplatform.extension.generator.service.api.AbstractConfigurationHandler;
 import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
@@ -90,7 +91,8 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
               }
               List<String> siteContentLocation = siteContentsLocation.get(siteName);
               if (siteContentLocation == null) {
-                siteContentLocation = siteContentsLocation.put(siteName, new ArrayList<String>());
+                siteContentLocation = new ArrayList<String>();
+                siteContentsLocation.put(siteName, siteContentLocation);
               }
               String location = fileParts[1];
               siteContentLocation.add(location);
@@ -106,23 +108,31 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
       clearTempFiles();
     }
 
-    ExternalComponentPlugins ignoreContentComponentPlugin = new ExternalComponentPlugins();
-    {
-      InitParams params = new InitParams();
-      ValuesParam valuesParam = new ValuesParam();
-      valuesParam.setName("autoCreatedInNewRepository");
-      ArrayList<String> ignoredSitesList = new ArrayList<String>(siteMetadatas.keySet());
-      ignoredSitesList.remove("shared");
-      valuesParam.setValues(ignoredSitesList);
-      params.addParam(valuesParam);
-      ComponentPlugin plugin = createComponentPlugin("Add as ignored portal", IgnorePortalPlugin.class.getName(), "addIgnorePortalPlugin", params);
-      addComponentPlugin(ignoreContentComponentPlugin, CreatePortalArtifactsService.class.getName(), plugin);
+    ExternalComponentPlugins ignoreContentComponentPlugin = null;
+    ArrayList<String> ignoredSitesList = new ArrayList<String>(siteMetadatas.keySet());
+    ignoredSitesList.remove("shared");
+    if (!ignoredSitesList.isEmpty()) {
+      ignoreContentComponentPlugin = new ExternalComponentPlugins();
+      {
+        InitParams params = new InitParams();
+        ValuesParam valuesParam = new ValuesParam();
+        valuesParam.setName("autoCreatedInNewRepository");
+        valuesParam.setValues(ignoredSitesList);
+        params.addParam(valuesParam);
+        ComponentPlugin plugin = createComponentPlugin("Add as ignored portal", IgnorePortalPlugin.class.getName(), "addIgnorePortalPlugin", params);
+        addComponentPlugin(ignoreContentComponentPlugin, CreatePortalArtifactsService.class.getName(), plugin);
+      }
     }
 
     ExternalComponentPlugins contentExternalComponentPlugins = new ExternalComponentPlugins();
     Set<Entry<String, SiteMetaData>> sitesDataSet = siteMetadatas.entrySet();
     for (Entry<String, SiteMetaData> siteDataEntry : sitesDataSet) {
       InitParams params = new InitParams();
+      ValueParam overrideParam = new ValueParam();
+      overrideParam.setName("override");
+      overrideParam.setValue("false");
+      params.addParameter(overrideParam);
+
       ComponentPlugin plugin = createComponentPlugin(siteDataEntry.getKey() + " Content Initializer Service", XMLDeploymentPlugin.class.getName(), "addPlugin", params);
       addComponentPlugin(contentExternalComponentPlugins, WCMContentInitializerService.class.getName(), plugin);
 
@@ -139,7 +149,8 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
 
         Target target = new Target();
         target.setWorkspace(siteData.getOptions().get("site-workspace"));
-        target.setNodePath(location);
+        String targetNodePath = location.substring(0, location.lastIndexOf("/"));
+        target.setNodePath(targetNodePath);
         deploymentDescriptor.setTarget(target);
 
         ObjectParameter objectParameter = new ObjectParameter();
@@ -155,7 +166,9 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
     Configuration configuration = new Configuration();
     configuration.addComponent(component);
     configuration.addExternalComponentPlugins(contentExternalComponentPlugins);
-    configuration.addExternalComponentPlugins(ignoreContentComponentPlugin);
+    if (ignoreContentComponentPlugin != null) {
+      configuration.addExternalComponentPlugins(ignoreContentComponentPlugin);
+    }
 
     return Utils.writeConfiguration(zos, WCM_CONTENT_CONFIGURATION_LOCATION + WCM_CONTENT_CONFIGURATION_NAME, extensionName, configuration);
   }
