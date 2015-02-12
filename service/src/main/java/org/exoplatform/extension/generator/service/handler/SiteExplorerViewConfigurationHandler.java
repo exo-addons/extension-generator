@@ -50,8 +50,9 @@ public class SiteExplorerViewConfigurationHandler extends AbstractConfigurationH
 
     InitParams allParams = null;
     // Copy gtmpl in WAR and get all initParams in a single one
-    ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH, filterViews.toArray(new String[0]));
+    ZipFile zipFile = null;
     try {
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH, filterViews.toArray(new String[0]));
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         ZipEntry entry = (ZipEntry) entries.nextElement();
@@ -87,6 +88,13 @@ public class SiteExplorerViewConfigurationHandler extends AbstractConfigurationH
       log.error("Error iccured while handling view templates", e);
       throw new RuntimeException(e);
     } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception exp) {
+          // Nothing to do
+        }
+      }
       clearTempFiles();
     }
   }

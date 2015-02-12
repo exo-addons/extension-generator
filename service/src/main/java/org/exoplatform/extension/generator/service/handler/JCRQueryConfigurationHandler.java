@@ -30,8 +30,9 @@ public class JCRQueryConfigurationHandler extends AbstractConfigurationHandler {
       return false;
     }
     configurationPaths.clear();
+    ZipFile zipFile = null;
     try {
-      ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_QUERY_PATH);
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_QUERY_PATH);
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
@@ -45,6 +46,13 @@ public class JCRQueryConfigurationHandler extends AbstractConfigurationHandler {
         }
       }
     } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception e) {
+          // Nothing to do
+        }
+      }
       clearTempFiles();
     }
     return true;

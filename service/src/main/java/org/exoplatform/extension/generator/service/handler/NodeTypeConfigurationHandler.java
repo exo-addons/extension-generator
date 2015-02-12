@@ -76,8 +76,9 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
       String nodeTypeName = resourcePath.replace(ExtensionGenerator.ECM_NODETYPE_PATH + "/", "");
       filterNodeTypes.add(nodeTypeName);
     }
+    ZipFile zipFile = null;
     try {
-      ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_NODETYPE_PATH, filterNodeTypes.toArray(new String[0]));
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_NODETYPE_PATH, filterNodeTypes.toArray(new String[0]));
       ZipEntry namespaceConfigurationEntry = zipFile.getEntry(JCR_NAMESPACES_CONFIGURATION_XML);
       try {
         InputStream inputStream = zipFile.getInputStream(namespaceConfigurationEntry);
@@ -140,6 +141,13 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
       log.error("Error while serializing MOP data", e);
       return false;
     } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception e) {
+          // nothing to do
+        }
+      }
       clearTempFiles();
     }
     return Utils.writeConfiguration(zos, JCR_CONFIGURATION_LOCATION + JCR_CONFIGURATION_NAME, extensionName, externalComponentPlugins);

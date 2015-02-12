@@ -53,8 +53,9 @@ public class MetadataTemplatesConfigurationHandler extends AbstractConfiguration
       filterMetadatas.add(metadataName);
     }
     List<MetadataTemplatesMetaData> metaDatas = new ArrayList<MetadataTemplatesMetaData>();
+    ZipFile zipFile = null;
     try {
-      ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_TEMPLATES_METADATA_PATH, filterMetadatas.toArray(new String[0]));
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_TEMPLATES_METADATA_PATH, filterMetadatas.toArray(new String[0]));
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
@@ -76,6 +77,13 @@ public class MetadataTemplatesConfigurationHandler extends AbstractConfiguration
         }
       }
     } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception e) {
+          // Nothing to do
+        }
+      }
       clearTempFiles();
     }
 

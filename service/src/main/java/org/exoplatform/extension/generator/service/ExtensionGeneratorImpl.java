@@ -327,6 +327,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   @Override
   public InputStream generateExtensionMavenProject(String extensionName, Set<String> selectedResources) throws Exception {
     File zipFile = File.createTempFile("Maven-CustomExtension", ".zip");
+    zipFile.deleteOnExit();
     ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
 
     // Copy Zip file containing Maven Project Structure in Temp File

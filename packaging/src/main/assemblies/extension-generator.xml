@@ -20,6 +20,15 @@
 		</dependencySet>
 		<dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
+			<outputDirectory>lib</outputDirectory>
+			<outputFileNameMapping>${artifact.artifactId}-1.1.0.Final.${artifact.extension}</outputFileNameMapping>
+			<includes>
+				<include>org.gatein.management:gatein-management-*:jar</include>
+			</includes>
+			<scope>provided</scope>
+		</dependencySet>
+		<dependencySet>
+			<useProjectArtifact>false</useProjectArtifact>
 			<outputDirectory>webapps</outputDirectory>
 			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 			<includes>

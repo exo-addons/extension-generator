@@ -1,5 +1,6 @@
 package org.exoplatform.extension.generator.service.handler;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,19 +49,39 @@ public class MOPSiteConfigurationHandler extends AbstractConfigurationHandler {
       return false;
     }
     HashSet<String> siteNames = new HashSet<String>();
+    ZipFile zipFile = null;
     try {
       for (String resourcePath : filteredSelectedResources) {
         siteNames.add(resourcePath.replace(siteResourcePath, ""));
-        ZipFile zipFile = getExportedFileFromOperation(resourcePath);
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-          ZipEntry zipEntry = (ZipEntry) entries.nextElement();
-          try {
-            InputStream inputStream = zipFile.getInputStream(zipEntry);
-            Utils.writeZipEnry(zos, SITES_CONFIGURATION_LOCATION + zipEntry.getName(), extensionName, inputStream, false);
-          } catch (Exception e) {
-            log.error("Error while serializing MOP data", e);
-            return false;
+        zipFile = getExportedFileFromOperation(resourcePath);
+        try {
+          Enumeration<? extends ZipEntry> entries = zipFile.entries();
+          while (entries.hasMoreElements()) {
+            ZipEntry zipEntry = (ZipEntry) entries.nextElement();
+            InputStream inputStream = null;
+            try {
+              inputStream = zipFile.getInputStream(zipEntry);
+              Utils.writeZipEnry(zos, SITES_CONFIGURATION_LOCATION + zipEntry.getName(), extensionName, inputStream, false);
+            } finally {
+              if (inputStream != null) {
+                try {
+                  inputStream.close();
+                } catch (IOException e) {
+                  log.error(e);
+                }
+              }
+            }
+          }
+        } catch (Exception e) {
+          log.error("Error while serializing MOP data", e);
+          return false;
+        } finally {
+          if (zipFile != null) {
+            try {
+              zipFile.close();
+            } catch (IOException e) {
+              e.printStackTrace();
+            }
           }
         }
       }

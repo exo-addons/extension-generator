@@ -67,8 +67,9 @@ public class ScriptsConfigurationHandler extends AbstractConfigurationHandler {
       ComponentPlugin plugin = createComponentPlugin("manage.script.plugin", ScriptPlugin.class.getName(), "addScriptPlugin", params);
       addComponentPlugin(externalComponentPlugins, ScriptService.class.getName(), plugin);
     }
+    ZipFile zipFile = null;
     try {
-      ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_SCRIPT_PATH, filterScripts.toArray(new String[0]));
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_SCRIPT_PATH, filterScripts.toArray(new String[0]));
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
@@ -86,6 +87,13 @@ public class ScriptsConfigurationHandler extends AbstractConfigurationHandler {
         }
       }
     } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception e) {
+          // Nothing to do
+        }
+      }
       clearTempFiles();
     }
     return Utils.writeConfiguration(zos, DMS_CONFIGURATION_LOCATION + SCRIPT_CONFIGURATION_NAME, extensionName, externalComponentPlugins);

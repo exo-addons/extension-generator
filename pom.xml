@@ -25,7 +25,7 @@
 		<tag>HEAD</tag>
 	</scm>
 	<properties>
-		<org.exoplatform.addons.staging.version>2.3.0-alpha-2</org.exoplatform.addons.staging.version>
+		<org.exoplatform.addons.staging.version>2.3.0-alpha-3</org.exoplatform.addons.staging.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>

@@ -68,32 +68,26 @@ public abstract class AbstractConfigurationHandler implements ConfigurationHandl
     try {
       // Call GateIN Management SPI
       ManagedResponse response = getManagementController().execute(request);
-
       // Create temp file
       tmpFile = File.createTempFile("exo", "-extension-generator.zip");
       outputStream = new FileOutputStream(tmpFile);
-      tempFiles.add(tmpFile);
-
       // Create temp file
       response.writeResult(outputStream, false);
-      outputStream.flush();
-      outputStream.close();
-
       return new ZipFile(tmpFile);
     } catch (Exception e) {
+      throw new RuntimeException("Error while handling Response from GateIN Management, export operation", e);
+    } finally {
       if (outputStream != null) {
         try {
           outputStream.flush();
           outputStream.close();
         } catch (IOException ioExp) {
-          // nothing to do
-        }
-        // Delete file, not used if an error occurs
-        if (tmpFile != null) {
-          tmpFile.delete();
+          // Nothing to do
         }
       }
-      throw new RuntimeException("Error while handling Response from GateIN Management, export operation", e);
+      if (tmpFile != null && tmpFile.exists()) {
+        tempFiles.add(tmpFile);
+      }
     }
   }
 
@@ -112,6 +106,7 @@ public abstract class AbstractConfigurationHandler implements ConfigurationHandl
         }
       }
     }
+    tempFiles.clear();
   }
 
   /**

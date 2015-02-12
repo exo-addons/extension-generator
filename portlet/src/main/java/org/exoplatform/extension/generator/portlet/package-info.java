@@ -11,3 +11,4 @@ import juzu.plugin.portlet.Portlet;
 import org.exoplatform.extension.generator.service.ExtensionGeneratorImpl;
 import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
 import org.gatein.management.api.controller.ManagementController;
+

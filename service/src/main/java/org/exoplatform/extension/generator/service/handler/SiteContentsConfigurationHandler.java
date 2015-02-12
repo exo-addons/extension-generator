@@ -25,7 +25,7 @@ import org.exoplatform.container.xml.ValuesParam;
 import org.exoplatform.extension.generator.service.api.AbstractConfigurationHandler;
 import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
 import org.exoplatform.extension.generator.service.api.Utils;
-import org.exoplatform.management.common.activities.JCRNodeExportTask;
+import org.exoplatform.management.common.exportop.JCRNodeExportTask;
 import org.exoplatform.management.content.operations.site.SiteConstants;
 import org.exoplatform.management.content.operations.site.contents.SiteMetaData;
 import org.exoplatform.services.deployment.DeploymentDescriptor;
@@ -66,41 +66,52 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
         filters[0] = "no-skeleton:true";
         filters[1] = "taxonomy:false";
         filters[2] = "no-hitory:true";
-        ZipFile zipFile = getExportedFileFromOperation(filteredResource, filters);
+        ZipFile zipFile = null;
+        try {
+          zipFile = getExportedFileFromOperation(filteredResource, filters);
 
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-          ZipEntry zipEntry = (ZipEntry) entries.nextElement();
-          try {
-            InputStream inputStream = zipFile.getInputStream(zipEntry);
-            String siteName = extractSiteNameFromPath(zipEntry.getName());
-            if (zipEntry.getName().endsWith("metadata.xml")) {
-              // Unmarshall metadata xml file
-              XStream xstream = new XStream();
-              xstream.alias("metadata", SiteMetaData.class);
-              InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
-              siteMetadatas.put(siteName, (SiteMetaData) xstream.fromXML(isr));
-              // Save unmarshalled metadata
-            } else if (zipEntry.getName().endsWith("seo.xml")) {
-              continue;
-            } else {
-              String[] fileParts = zipEntry.getName().split(JCRNodeExportTask.JCR_DATA_SEPARATOR);
-              if (fileParts.length != 2) {
-                log.warn("Cannot parse file: " + zipEntry.getName());
+          Enumeration<? extends ZipEntry> entries = zipFile.entries();
+          while (entries.hasMoreElements()) {
+            ZipEntry zipEntry = (ZipEntry) entries.nextElement();
+            try {
+              InputStream inputStream = zipFile.getInputStream(zipEntry);
+              String siteName = extractSiteNameFromPath(zipEntry.getName());
+              if (zipEntry.getName().endsWith("metadata.xml")) {
+                // Unmarshall metadata xml file
+                XStream xstream = new XStream();
+                xstream.alias("metadata", SiteMetaData.class);
+                InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
+                siteMetadatas.put(siteName, (SiteMetaData) xstream.fromXML(isr));
+                // Save unmarshalled metadata
+              } else if (zipEntry.getName().endsWith("seo.xml")) {
                 continue;
+              } else {
+                String[] fileParts = zipEntry.getName().split(JCRNodeExportTask.JCR_DATA_SEPARATOR);
+                if (fileParts.length != 2) {
+                  log.warn("Cannot parse file: " + zipEntry.getName());
+                  continue;
+                }
+                List<String> siteContentLocation = siteContentsLocation.get(siteName);
+                if (siteContentLocation == null) {
+                  siteContentLocation = new ArrayList<String>();
+                  siteContentsLocation.put(siteName, siteContentLocation);
+                }
+                String location = fileParts[1];
+                siteContentLocation.add(location);
+                Utils.writeZipEnry(zos, WCM_CONTENT_CONFIGURATION_LOCATION + location, extensionName, inputStream, false);
               }
-              List<String> siteContentLocation = siteContentsLocation.get(siteName);
-              if (siteContentLocation == null) {
-                siteContentLocation = new ArrayList<String>();
-                siteContentsLocation.put(siteName, siteContentLocation);
-              }
-              String location = fileParts[1];
-              siteContentLocation.add(location);
-              Utils.writeZipEnry(zos, WCM_CONTENT_CONFIGURATION_LOCATION + location, extensionName, inputStream, false);
+            } catch (Exception e) {
+              log.error("Exception while writing Data", e);
+              return false;
             }
-          } catch (Exception e) {
-            log.error("Exception while writing Data", e);
-            return false;
+          }
+        } catch (Exception e) {
+          if (zipFile != null) {
+            try {
+              zipFile.close();
+            } catch (Exception exp) {
+              // Nothing to do
+            }
           }
         }
       }
