@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,6 +28,7 @@ import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
 import org.exoplatform.extension.generator.service.api.Utils;
 import org.exoplatform.management.common.exportop.JCRNodeExportTask;
 import org.exoplatform.management.content.operations.site.SiteConstants;
+import org.exoplatform.management.content.operations.site.contents.SiteContentsVersionHistoryExportTask;
 import org.exoplatform.management.content.operations.site.contents.SiteMetaData;
 import org.exoplatform.services.deployment.DeploymentDescriptor;
 import org.exoplatform.services.deployment.DeploymentDescriptor.Target;
@@ -60,6 +62,7 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
 
     Map<String, SiteMetaData> siteMetadatas = new HashMap<String, SiteMetaData>();
     Map<String, List<String>> siteContentsLocation = new HashMap<String, List<String>>();
+    Set<String> contentsWithVersionHistory = new HashSet<String>();
     try {
       for (String filteredResource : filteredSelectedResources) {
         String[] filters = new String[3];
@@ -97,7 +100,11 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
                   siteContentsLocation.put(siteName, siteContentLocation);
                 }
                 String location = fileParts[1];
-                siteContentLocation.add(location);
+                if (location.endsWith(SiteContentsVersionHistoryExportTask.VERSION_HISTORY_FILE_SUFFIX)) {
+                  contentsWithVersionHistory.add(location.replace(SiteContentsVersionHistoryExportTask.VERSION_HISTORY_FILE_SUFFIX, ".xml"));
+                } else {
+                  siteContentLocation.add(location);
+                }
                 Utils.writeZipEnry(zos, WCM_CONTENT_CONFIGURATION_LOCATION + location, extensionName, inputStream, false);
               }
             } catch (Exception e) {
@@ -153,7 +160,7 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
       List<String> exportedFiles = siteContentsLocation.get(siteName);
       for (String location : exportedFiles) {
         DeploymentDescriptor deploymentDescriptor = new DeploymentDescriptor();
-        deploymentDescriptor.setCleanupPublication(true);
+        deploymentDescriptor.setCleanupPublication(false);
         String xmlLocation = WCM_CONTENT_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName) + location;
 
         deploymentDescriptor.setSourcePath(xmlLocation);
@@ -164,6 +171,10 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
         target.setNodePath(targetNodePath);
         deploymentDescriptor.setTarget(target);
 
+        if(contentsWithVersionHistory.contains(location)) {
+          String versionHistoryFile = xmlLocation.replace(".xml", SiteContentsVersionHistoryExportTask.VERSION_HISTORY_FILE_SUFFIX);
+          deploymentDescriptor.setVersionHistoryPath(versionHistoryFile);
+        }
         ObjectParameter objectParameter = new ObjectParameter();
         objectParameter.setName(location);
         objectParameter.setObject(deploymentDescriptor);
