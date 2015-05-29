@@ -31,11 +31,6 @@
 			});
 
 	$(document).ready(function() {
-		$.fn.DataTable = jQuery.fn.dataTable;
-		$.fn.dataTable = jQuery.fn.dataTable;
-		$.fn.dataTableSettings = jQuery.fn.dataTable.settings;
-		$.fn.dataTableExt = jQuery.fn.dataTable.ext;
-
 		$('.tree_datatable').each(function() {
 			$(this).dataTable({
 				"bSort" : false,
