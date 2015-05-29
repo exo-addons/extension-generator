@@ -62,7 +62,10 @@ public class ActionNodeTypeConfigurationHandler extends AbstractConfigurationHan
       while (entries.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
         String actionTypeConfigurationLocation = JCR_CONFIGURATION_LOCATION + zipEntry.getName();
-        valuesParam.getValues().add(actionTypeConfigurationLocation.replace("WEB-INF", "war:").replace("custom-extension", extensionName));
+
+        String path = actionTypeConfigurationLocation.replace("WEB-INF", "war:").replace("custom-extension", extensionName).replaceAll("/ecmadmin", "");
+
+        valuesParam.getValues().add(path);
         try {
           InputStream inputStream = zipFile.getInputStream(zipEntry);
           Utils.writeZipEnry(zos, actionTypeConfigurationLocation, extensionName, inputStream, false);
