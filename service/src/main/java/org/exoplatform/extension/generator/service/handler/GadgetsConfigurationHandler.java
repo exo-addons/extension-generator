@@ -70,8 +70,13 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
           continue;
         }
         Node gadgetParentNode = gadgetXMLNode.getParent();
-        if (!gadgetParentNode.isNodeType("nt:folder") || gadgetParentNode.getPath().equals("/")) {
-          getLogger().warn("Cannot export Gadget '" + gadget.getName() + "'. Each gadget have to be in a separate folder.");
+        if (gadgetParentNode.getPath().equals("/")) {
+          gadgetsConfiguration.append("\r\n\r\n\t<!-- Gadget '" + gadget.getName() + "' is not exported. Please add it in a separate folder, not under '/' (root folder of the workspace). -->\r\n\r\n");
+          getLogger().warn("Cannot export Gadget '" + gadget.getName() + "'. Each gadget have to be in a separate folder and not under root folder of the workspace.");
+          continue;
+        }
+        if (!gadgetParentNode.isNodeType("nt:folder")) {
+          getLogger().warn("Cannot export Gadget '" + gadget.getName() + "'. Its parent node is not a folder.");
           continue;
         }
 
