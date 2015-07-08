@@ -33,9 +33,9 @@ import org.exoplatform.management.content.operations.site.contents.SiteMetaData;
 import org.exoplatform.services.deployment.DeploymentDescriptor;
 import org.exoplatform.services.deployment.DeploymentDescriptor.Target;
 import org.exoplatform.services.deployment.WCMContentInitializerService;
-import org.exoplatform.services.deployment.plugins.XMLDeploymentPlugin;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
+import org.exoplatform.services.wcm.extensions.deployment.WCMPublicationDeploymentPlugin;
 import org.exoplatform.services.wcm.portal.artifacts.CreatePortalArtifactsService;
 import org.exoplatform.services.wcm.portal.artifacts.IgnorePortalPlugin;
 
@@ -151,7 +151,7 @@ public class SiteContentsConfigurationHandler extends AbstractConfigurationHandl
       overrideParam.setValue("false");
       params.addParameter(overrideParam);
 
-      ComponentPlugin plugin = createComponentPlugin(siteDataEntry.getKey() + " Content Initializer Service", XMLDeploymentPlugin.class.getName(), "addPlugin", params);
+      ComponentPlugin plugin = createComponentPlugin(siteDataEntry.getKey() + " Content Initializer Service", WCMPublicationDeploymentPlugin.class.getName(), "addPlugin", params);
       addComponentPlugin(contentExternalComponentPlugins, WCMContentInitializerService.class.getName(), plugin);
 
       SiteMetaData siteData = siteDataEntry.getValue();

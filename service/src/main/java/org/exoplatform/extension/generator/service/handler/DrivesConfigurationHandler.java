@@ -39,9 +39,10 @@ public class DrivesConfigurationHandler extends AbstractConfigurationHandler {
     try {
       zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_DRIVE_PATH, filterDrives.toArray(new String[0]));
       ZipEntry drivesConfigurationEntry = zipFile.getEntry(DRIVE_CONFIGURATION_LOCATION_FROM_EXPORT);
+      String drivesConfigurationEntryName = drivesConfigurationEntry.getName().replaceAll("ecmadmin/", "");
       InputStream inputStream = zipFile.getInputStream(drivesConfigurationEntry);
-      Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + drivesConfigurationEntry.getName(), extensionName, inputStream, false);
-      configurationPaths.add(DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + drivesConfigurationEntry.getName());
+      Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + drivesConfigurationEntryName, extensionName, inputStream, false);
+      configurationPaths.add(DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + drivesConfigurationEntryName);
       return true;
     } catch (Exception e) {
       log.error("Error while serializing drives data", e);

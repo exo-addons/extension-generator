@@ -13,7 +13,6 @@ public interface ExtensionGenerator {
   public static final String SITES_USER_PATH = "/site/usersites";
   public static final String CONTENT_SITES_PATH = "/content/sites";
   public static final String ECM_TEMPLATES_APPLICATION_CLV_PATH = "/ecmadmin/templates/applications/content-list-viewer";
-  public static final String ECM_TEMPLATES_APPLICATION_SEARCH_PATH = "/ecmadmin/templates/applications/search";
   public static final String ECM_TEMPLATES_DOCUMENT_TYPE_PATH = "/ecmadmin/templates/nodetypes";
   public static final String ECM_TEMPLATES_METADATA_PATH = "/ecmadmin/templates/metadata";
   public static final String ECM_TAXONOMY_PATH = "/ecmadmin/taxonomy";
@@ -68,15 +67,6 @@ public interface ExtensionGenerator {
    * @return list of CLV templates managed paths.
    */
   List<Node> getApplicationCLVTemplatesNodes();
-
-  /**
-   * Returns the list of sub resources of
-   * /ecmadmin/templates/applications/search managed resources computed from
-   * GateIN Management SPI
-   * 
-   * @return list of Search Portlet Templates managed paths.
-   */
-  List<Node> getApplicationSearchTemplatesNodes();
 
   /**
    * Returns the list of sub resources of

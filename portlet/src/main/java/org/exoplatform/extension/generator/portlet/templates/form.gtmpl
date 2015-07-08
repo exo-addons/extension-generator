@@ -25,7 +25,6 @@
 	  addSelectedContent(userSiteSelectedNodes, "userSitesSelectedResources", "User Sites");
 	  addSelectedContent(siteContentSelectedNodes, "siteContentSelectedResources", "Sites Content");
 	  addSelectedContent(applicationCLVTemplatesSelectedNodes, "CLVTemplatesSelectedResources", "CLV Templates");
-	  addSelectedContent(applicationSearchTemplatesSelectedNodes, "SearchTemplatesSelectedResources", "Search Templates");
 	  addSelectedContent(documentTypeTemplatesSelectedNodes, "documentTypeTemplatesSelectedResources", "Document Types Templates");
 	  addSelectedContent(metadataTemplatesSelectedNodes, "metadataTemplatesSelectedResources", "Metadata Templates");
 	  addSelectedContent(taxonomySelectedNodes, "taxonomySelectedResources", "Taxonomies");

@@ -50,7 +50,6 @@ public class ExtensionGeneratorController {
     parameters.put("userSitePath", ExtensionGenerator.SITES_USER_PATH);
     parameters.put("siteContentPath", ExtensionGenerator.CONTENT_SITES_PATH);
     parameters.put("applicationCLVTemplatesPath", ExtensionGenerator.ECM_TEMPLATES_APPLICATION_CLV_PATH);
-    parameters.put("applicationSearchTemplatesPath", ExtensionGenerator.ECM_TEMPLATES_APPLICATION_SEARCH_PATH);
     parameters.put("documentTypeTemplatesPath", ExtensionGenerator.ECM_TEMPLATES_DOCUMENT_TYPE_PATH);
     parameters.put("metadataTemplatesPath", ExtensionGenerator.ECM_TEMPLATES_METADATA_PATH);
     parameters.put("taxonomyPath", ExtensionGenerator.ECM_TAXONOMY_PATH);
@@ -67,7 +66,7 @@ public class ExtensionGeneratorController {
   }
 
   @View
-  public Response.Render index() {
+  public Response.Content index() {
     selectedResources.clear();
     // NODES
     resources.put(ExtensionGenerator.SITES_PORTAL_PATH, extensionGeneratorService.getPortalSiteNodes());
@@ -75,7 +74,6 @@ public class ExtensionGeneratorController {
     resources.put(ExtensionGenerator.SITES_USER_PATH, extensionGeneratorService.getUserSiteNodes());
     resources.put(ExtensionGenerator.CONTENT_SITES_PATH, extensionGeneratorService.getSiteContentNodes());
     resources.put(ExtensionGenerator.ECM_TEMPLATES_APPLICATION_CLV_PATH, extensionGeneratorService.getApplicationCLVTemplatesNodes());
-    resources.put(ExtensionGenerator.ECM_TEMPLATES_APPLICATION_SEARCH_PATH, extensionGeneratorService.getApplicationSearchTemplatesNodes());
     resources.put(ExtensionGenerator.ECM_TEMPLATES_DOCUMENT_TYPE_PATH, extensionGeneratorService.getDocumentTypeTemplatesNodes());
     resources.put(ExtensionGenerator.ECM_TEMPLATES_METADATA_PATH, extensionGeneratorService.getMetadataTemplatesNodes());
     resources.put(ExtensionGenerator.ECM_TAXONOMY_PATH, extensionGeneratorService.getTaxonomyNodes());
@@ -96,7 +94,6 @@ public class ExtensionGeneratorController {
     parameters.put("userSiteNodes", resources.get(ExtensionGenerator.SITES_USER_PATH));
     parameters.put("siteContentNodes", resources.get(ExtensionGenerator.CONTENT_SITES_PATH));
     parameters.put("applicationCLVTemplatesNodes", resources.get(ExtensionGenerator.ECM_TEMPLATES_APPLICATION_CLV_PATH));
-    parameters.put("applicationSearchTemplatesNodes", resources.get(ExtensionGenerator.ECM_TEMPLATES_APPLICATION_SEARCH_PATH));
     parameters.put("documentTypeTemplatesNodes", resources.get(ExtensionGenerator.ECM_TEMPLATES_DOCUMENT_TYPE_PATH));
     parameters.put("metadataTemplatesNodes", resources.get(ExtensionGenerator.ECM_TEMPLATES_METADATA_PATH));
     parameters.put("taxonomyNodes", resources.get(ExtensionGenerator.ECM_TAXONOMY_PATH));
@@ -118,7 +115,6 @@ public class ExtensionGeneratorController {
     parameters.put("userSiteSelectedNodes", getSelectedResources(ExtensionGenerator.SITES_USER_PATH));
     parameters.put("siteContentSelectedNodes", getSelectedResources(ExtensionGenerator.CONTENT_SITES_PATH));
     parameters.put("applicationCLVTemplatesSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TEMPLATES_APPLICATION_CLV_PATH));
-    parameters.put("applicationSearchTemplatesSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TEMPLATES_APPLICATION_SEARCH_PATH));
     parameters.put("documentTypeTemplatesSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TEMPLATES_DOCUMENT_TYPE_PATH));
     parameters.put("metadataTemplatesSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TEMPLATES_METADATA_PATH));
     parameters.put("taxonomySelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TAXONOMY_PATH));
@@ -166,7 +162,6 @@ public class ExtensionGeneratorController {
     parameters.put("userSiteSelectedNodes", getSelectedResources(ExtensionGenerator.SITES_USER_PATH));
     parameters.put("siteContentSelectedNodes", getSelectedResources(ExtensionGenerator.CONTENT_SITES_PATH));
     parameters.put("applicationCLVTemplatesSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TEMPLATES_APPLICATION_CLV_PATH));
-    parameters.put("applicationSearchTemplatesSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TEMPLATES_APPLICATION_SEARCH_PATH));
     parameters.put("documentTypeTemplatesSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TEMPLATES_DOCUMENT_TYPE_PATH));
     parameters.put("metadataTemplatesSelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TEMPLATES_METADATA_PATH));
     parameters.put("taxonomySelectedNodes", getSelectedResources(ExtensionGenerator.ECM_TAXONOMY_PATH));
@@ -181,12 +176,12 @@ public class ExtensionGeneratorController {
     parameters.put("ideGroovyRestServicesSelectedNodes", getSelectedResources(ExtensionGenerator.IDE_REST_PATH));
     parameters.put("gadgetSelectedNodes", getSelectedResources(ExtensionGenerator.GADGET_PATH));
 
-    form.render(parameters);
+    form.ok(parameters);
   }
 
   @Ajax
   @Resource
-  public Response.Content<?> exportExtension(String archiveType, String extensionName) throws IOException {
+  public Response.Content exportExtension(String archiveType, String extensionName) throws IOException {
     try {
       InputStream inputStream = null;
       if (archiveType.equals("maven")) {

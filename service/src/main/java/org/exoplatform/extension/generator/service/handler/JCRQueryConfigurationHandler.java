@@ -36,10 +36,11 @@ public class JCRQueryConfigurationHandler extends AbstractConfigurationHandler {
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
+        String location = zipEntry.getName().replaceAll("ecmadmin/", "");
         try {
           InputStream inputStream = zipFile.getInputStream(zipEntry);
-          Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + zipEntry.getName(), extensionName, inputStream, false);
-          configurationPaths.add(DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + zipEntry.getName());
+          Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + location, extensionName, inputStream, false);
+          configurationPaths.add(DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + location);
         } catch (Exception e) {
           log.error("Error while serializing JCR Query data", e);
           return false;
