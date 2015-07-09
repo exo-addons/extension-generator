@@ -37,14 +37,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			<!-- Import versions from staging-extension project -->
-			<dependency>
-				<groupId>org.exoplatform.addons.staging</groupId>
-				<artifactId>staging-extension-parent</artifactId>
-				<version>${org.exoplatform.addons.staging.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
 			<dependency>
 				<groupId>org.exoplatform.addons.staging</groupId>
 				<artifactId>staging-extension-common</artifactId>
