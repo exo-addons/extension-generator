@@ -73,7 +73,7 @@ public class ScriptsConfigurationHandler extends AbstractConfigurationHandler {
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
-        String relatifLocation = zipEntry.getName().replaceFirst("script/ecmadmin", "");
+        String relatifLocation = zipEntry.getName().replaceFirst("ecmadmin/script", "");
         String scriptConfigurationLocation = DMS_CONFIGURATION_LOCATION + "scripts/" + relatifLocation;
         Resource scriptResource = new ResourceConfig.Resource();
         scriptResource.setName(relatifLocation);
