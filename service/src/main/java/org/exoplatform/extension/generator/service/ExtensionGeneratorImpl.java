@@ -48,7 +48,6 @@ import org.exoplatform.extension.generator.service.handler.NodeTypeConfiguration
 import org.exoplatform.extension.generator.service.handler.NodeTypeTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.RESTServicesFromIDEConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.ScriptsConfigurationHandler;
-import org.exoplatform.extension.generator.service.handler.SearchTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.SiteContentsConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.SiteExplorerTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.SiteExplorerViewConfigurationHandler;
@@ -94,7 +93,6 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     handlers.add(new MetadataTemplatesConfigurationHandler());
     handlers.add(new NodeTypeTemplatesConfigurationHandler());
     handlers.add(new SiteContentsConfigurationHandler());
-    handlers.add(new SearchTemplatesConfigurationHandler());
     handlers.add(new CLVTemplatesConfigurationHandler());
     handlers.add(new TaxonomyConfigurationHandler());
     handlers.add(new SiteExplorerTemplatesConfigurationHandler());
@@ -141,14 +139,6 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   @Override
   public List<Node> getApplicationCLVTemplatesNodes() {
     return getNodes(ECM_TEMPLATES_APPLICATION_CLV_PATH);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<Node> getApplicationSearchTemplatesNodes() {
-    return getNodes(ECM_TEMPLATES_APPLICATION_SEARCH_PATH);
   }
 
   /**
