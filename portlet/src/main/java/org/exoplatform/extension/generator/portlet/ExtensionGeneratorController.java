@@ -134,7 +134,7 @@ public class ExtensionGeneratorController {
 
   @Ajax
   @Resource
-  public synchronized void selectResources(String path, String checked) {
+  public synchronized Response.Content selectResources(String path, String checked) {
     if (checked != null && path != null && !checked.isEmpty() && !path.isEmpty()) {
       if (checked.equals("true")) {
         if (resources.containsKey(path)) {
@@ -176,7 +176,7 @@ public class ExtensionGeneratorController {
     parameters.put("ideGroovyRestServicesSelectedNodes", getSelectedResources(ExtensionGenerator.IDE_REST_PATH));
     parameters.put("gadgetSelectedNodes", getSelectedResources(ExtensionGenerator.GADGET_PATH));
 
-    form.ok(parameters);
+    return form.ok(parameters);
   }
 
   @Ajax
