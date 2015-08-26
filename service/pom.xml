@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.exoplatform.addons.generator</groupId>
 		<artifactId>extension-generator-parent</artifactId>
-		<version>1.3.0</version>
+		<version>1.3.x-SNAPSHOT</version>
 	</parent>
 	<artifactId>extension-generator-service</artifactId>
 	<name>Extension Generator - Service</name>
