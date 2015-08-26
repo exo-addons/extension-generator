@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.exoplatform.addons.generator</groupId>
 		<artifactId>extension-generator-parent</artifactId>
-		<version>1.3.x-SNAPSHOT</version>
+		<version>1.3.0</version>
 	</parent>
 	<artifactId>extension-generator-portlet</artifactId>
 	<packaging>war</packaging>
