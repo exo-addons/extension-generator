@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,7 +71,18 @@ public class ExtensionGeneratorController {
     selectedResources.clear();
     // NODES
     resources.put(ExtensionGenerator.SITES_PORTAL_PATH, extensionGeneratorService.getPortalSiteNodes());
-    resources.put(ExtensionGenerator.SITES_GROUP_PATH, extensionGeneratorService.getGroupSiteNodes());
+
+    List<Node> groupSites = extensionGeneratorService.getGroupSiteNodes();
+    // delete Spaces Group Sites Layout
+    Iterator<Node> groupSitesIterator = groupSites.iterator();
+    while (groupSitesIterator.hasNext()) {
+      Node groupSite = groupSitesIterator.next();
+      if(groupSite.getPath().contains("/spaces/")) {
+        groupSitesIterator.remove();
+      }
+    }
+    resources.put(ExtensionGenerator.SITES_GROUP_PATH, groupSites);
+
     resources.put(ExtensionGenerator.SITES_USER_PATH, extensionGeneratorService.getUserSiteNodes());
     resources.put(ExtensionGenerator.CONTENT_SITES_PATH, extensionGeneratorService.getSiteContentNodes());
     resources.put(ExtensionGenerator.ECM_TEMPLATES_APPLICATION_CLV_PATH, extensionGeneratorService.getApplicationCLVTemplatesNodes());
