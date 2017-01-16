@@ -87,23 +87,33 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     List<TaxonomyMetaData> taxonomiesMetaData = new ArrayList<TaxonomyMetaData>();
     try {
       for (String filteredResource : filteredSelectedResources) {
-        ZipFile zipFile = getExportedFileFromOperation(filteredResource);
-
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-          ZipEntry zipEntry = (ZipEntry) entries.nextElement();
-          try {
-            InputStream inputStream = zipFile.getInputStream(zipEntry);
-            if (zipEntry.getName().endsWith("metadata.xml")) {
-              XStream xStream = new XStream();
-              xStream.alias("metadata", TaxonomyMetaData.class);
-              InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
-              TaxonomyMetaData taxonomyMetaData = (TaxonomyMetaData) xStream.fromXML(isr);
-              taxonomiesMetaData.add(taxonomyMetaData);
+        ZipFile zipFile = null;
+        try {
+          zipFile = getExportedFileFromOperation(filteredResource);
+          Enumeration<? extends ZipEntry> entries = zipFile.entries();
+          while (entries.hasMoreElements()) {
+            ZipEntry zipEntry = (ZipEntry) entries.nextElement();
+            try {
+              InputStream inputStream = zipFile.getInputStream(zipEntry);
+              if (zipEntry.getName().endsWith("metadata.xml")) {
+                XStream xStream = new XStream();
+                xStream.alias("metadata", TaxonomyMetaData.class);
+                InputStreamReader isr = new InputStreamReader(inputStream, "UTF-8");
+                TaxonomyMetaData taxonomyMetaData = (TaxonomyMetaData) xStream.fromXML(isr);
+                taxonomiesMetaData.add(taxonomyMetaData);
+              }
+            } catch (Exception e) {
+              log.error("Error while serializing Taxonomy Configuration data", e);
+              return false;
             }
-          } catch (Exception e) {
-            log.error("Error while serializing Taxonomy Configuration data", e);
-            return false;
+          }
+        } finally {
+          if (zipFile != null) {
+            try {
+              zipFile.close();
+            } catch (Exception exp) {
+              // Nothing to do
+            }
           }
         }
       }

@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ import java.util.zip.ZipOutputStream;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.io.FileUtils;
 import org.exoplatform.application.gadget.Gadget;
 import org.exoplatform.application.gadget.GadgetRegistryService;
 import org.exoplatform.container.PortalContainer;
@@ -46,7 +48,6 @@ import org.exoplatform.extension.generator.service.handler.NodeTypeConfiguration
 import org.exoplatform.extension.generator.service.handler.NodeTypeTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.RESTServicesFromIDEConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.ScriptsConfigurationHandler;
-import org.exoplatform.extension.generator.service.handler.SearchTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.SiteContentsConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.SiteExplorerTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.SiteExplorerViewConfigurationHandler;
@@ -65,6 +66,7 @@ import org.gatein.management.api.controller.ManagedResponse;
 import org.gatein.management.api.controller.ManagementController;
 import org.gatein.management.api.operation.OperationNames;
 import org.gatein.management.api.operation.model.ReadResourceModel;
+import org.picocontainer.ComponentAdapter;
 
 @Singleton
 public class ExtensionGeneratorImpl implements ExtensionGenerator {
@@ -72,7 +74,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   private static final String WEB_XML_TEMPLATE_LOCATION = "generator/template/web.xml";
   private static final String CONFIGURATION_XML_LOCATION = "WEB-INF/conf/configuration.xml";
 
-  private Log log = ExoLogger.getLogger(this.getClass());
+  private static final Log log = ExoLogger.getLogger(ExtensionGeneratorImpl.class);
 
   private ManagementController managementController = null;
 
@@ -91,7 +93,6 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     handlers.add(new MetadataTemplatesConfigurationHandler());
     handlers.add(new NodeTypeTemplatesConfigurationHandler());
     handlers.add(new SiteContentsConfigurationHandler());
-    handlers.add(new SearchTemplatesConfigurationHandler());
     handlers.add(new CLVTemplatesConfigurationHandler());
     handlers.add(new TaxonomyConfigurationHandler());
     handlers.add(new SiteExplorerTemplatesConfigurationHandler());
@@ -138,14 +139,6 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   @Override
   public List<Node> getApplicationCLVTemplatesNodes() {
     return getNodes(ECM_TEMPLATES_APPLICATION_CLV_PATH);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public List<Node> getApplicationSearchTemplatesNodes() {
-    return getNodes(ECM_TEMPLATES_APPLICATION_SEARCH_PATH);
   }
 
   /**
@@ -245,6 +238,9 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     GroovyScript2RestLoader script2RestLoader = (GroovyScript2RestLoader) PortalContainer.getInstance().getComponentInstanceOfType(GroovyScript2RestLoader.class);
     RepositoryService repositoryService = (RepositoryService) PortalContainer.getInstance().getComponentInstanceOfType(RepositoryService.class);
     List<Node> nodes = new ArrayList<Node>();
+    if (script2RestLoader == null) {
+      return nodes;
+    }
 
     Set<String> predefinedScripts = getPredefinedScripts();
     try {
@@ -278,10 +274,14 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   public List<Node> getGadgets() {
     GadgetRegistryService gadgetRegistryService = (GadgetRegistryService) PortalContainer.getInstance().getComponentInstanceOfType(GadgetRegistryService.class);
     List<Node> nodes = new ArrayList<Node>();
+    if (gadgetRegistryService == null) {
+      return nodes;
+    }
+
     try {
       List<Gadget> gadgets = gadgetRegistryService.getAllGadgets();
       for (Gadget gadget : gadgets) {
-        if (gadget.isLocal() || !gadget.getUrl().contains("/rest/jcr/repository/")) {
+        if (!gadget.isLocal() && !gadget.getUrl().contains("jcr/repository")) {
           continue;
         }
         Node node = new Node(gadget.getTitle(), gadget.getDescription(), GADGET_PATH + gadget.getName());
@@ -300,14 +300,14 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   @Override
   public InputStream generateExtensionZip(String extensionName, Set<String> selectedResources) throws Exception {
     File file = File.createTempFile("CustomExtension", ".zip");
-    file.deleteOnExit();
     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
+
     // Put WAR file
     Utils.writeZipEnry(zos, "webapps/" + extensionName + ".war", extensionName, generateWARExtension(extensionName, selectedResources), false);
     // Put JAR file
     Utils.writeZipEnry(zos, "lib/" + extensionName + "-config.jar", extensionName, generateActiovationJar(extensionName), false);
     zos.close();
-    return new FileInputStream(file);
+    return new ClosableFileInputStream(file);
   }
 
   /**
@@ -333,7 +333,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     Utils.copyZipEnries(new ZipInputStream(warInputStream), zipOutputStream, extensionName, "war/src/main/webapp");
 
     zipOutputStream.close();
-    return new FileInputStream(zipFile);
+    return new ClosableFileInputStream(zipFile);
   }
 
   /**
@@ -343,21 +343,24 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
   @Override
   public InputStream generateWARExtension(String extensionName, Set<String> selectedResources) throws Exception {
     File file = File.createTempFile(extensionName, ".war");
-    file.deleteOnExit();
     ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
     Vector<String> tempSelectedResources = new Vector<String>(selectedResources);
 
     Configuration configuration = new Configuration();
     for (ConfigurationHandler configurationHandler : handlers) {
-      boolean extracted = configurationHandler.writeData(zos, extensionName, tempSelectedResources);
-      if (extracted) {
-        List<String> configurationPaths = configurationHandler.getConfigurationPaths();
-        if (configurationPaths != null) {
-          for (String path : configurationPaths) {
-            path = path.replace("custom-extension", extensionName);
-            configuration.addImport(path);
+      try {
+        boolean extracted = configurationHandler.writeData(zos, extensionName, tempSelectedResources);
+        if (extracted) {
+          List<String> configurationPaths = configurationHandler.getConfigurationPaths();
+          if (configurationPaths != null) {
+            for (String path : configurationPaths) {
+              path = path.replace("custom-extension", extensionName);
+              configuration.addImport(path);
+            }
           }
         }
+      } catch (Exception e) {
+        log.error("Error while handling resources for " + configurationHandler.getClass().getName(), e);
       }
     }
 
@@ -375,7 +378,7 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
       log.error("Error while closing ZipOutputStream.", e);
     }
 
-    return new FileInputStream(file);
+    return new ClosableFileInputStream(file);
   }
 
   @Override
@@ -432,13 +435,32 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
 
   private void addPredefinedScriptsForComponent(Set<String> predefinedScripts, String groovyScript2RestLoaderClassName) {
     ConfigurationManager configurationManager = (ConfigurationManager) PortalContainer.getInstance().getComponentInstanceOfType(ConfigurationManager.class);
-    ExternalComponentPlugins plugins = configurationManager.getConfiguration().getExternalComponentPlugins(groovyScript2RestLoaderClassName);
+    Class<?> groovyScript2RestLoaderClass = null;
+    try {
+      ComponentAdapter componentAdapter = PortalContainer.getInstance().getComponentAdapterOfType(Class.forName(groovyScript2RestLoaderClassName));
+      if (componentAdapter != null) {
+        groovyScript2RestLoaderClass = (Class<?>) componentAdapter.getComponentKey();
+      }
+    } catch (ClassNotFoundException e) {
+      // nothing to display, Platform gadgets are disabled
+    } catch (Exception e) {
+      log.warn("Operation Error - Compute Predefined Groovy scripts : '" + groovyScript2RestLoaderClassName + "' Component was not found.");
+    }
+    if (groovyScript2RestLoaderClass == null) {
+      return;
+    }
+
+    ExternalComponentPlugins plugins = configurationManager.getConfiguration().getExternalComponentPlugins(groovyScript2RestLoaderClass.getName());
     if (plugins != null) {
       List<ComponentPlugin> componentPlugins = plugins.getComponentPlugins();
-      addPredefinedScripts(predefinedScripts, componentPlugins);
+      if (componentPlugins != null && !componentPlugins.isEmpty()) {
+        addPredefinedScripts(predefinedScripts, componentPlugins);
+      }
     }
-    Component component = configurationManager.getConfiguration().getComponent(groovyScript2RestLoaderClassName);
-    addPredefinedScripts(predefinedScripts, component.getComponentPlugins());
+    Component component = configurationManager.getConfiguration().getComponent(groovyScript2RestLoaderClass.getName());
+    if (component.getComponentPlugins() != null && !component.getComponentPlugins().isEmpty()) {
+      addPredefinedScripts(predefinedScripts, component.getComponentPlugins());
+    }
   }
 
   private void addPredefinedScripts(Set<String> predefinedScripts, List<ComponentPlugin> componentPlugins) {
@@ -465,4 +487,23 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     return managementController;
   }
 
+  public static class ClosableFileInputStream extends FileInputStream {
+    File file;
+
+    public ClosableFileInputStream(File file) throws FileNotFoundException {
+      super(file);
+      this.file = file;
+    }
+
+    @Override
+    public void close() throws IOException {
+      super.close();
+      try {
+        FileUtils.forceDelete(file);
+      } catch (Exception e) {
+        log.warn("Cannot delete file: " + file.getName());
+        file.deleteOnExit();
+      }
+    }
+  }
 }

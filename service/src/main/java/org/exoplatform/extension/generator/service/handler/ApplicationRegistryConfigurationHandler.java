@@ -49,9 +49,9 @@ public class ApplicationRegistryConfigurationHandler extends AbstractConfigurati
     addComponentPlugin(externalComponentPlugins, ApplicationRegistryService.class.getName(), plugin);
 
     for (String resourcePath : filteredSelectedResources) {
-
+      ZipFile zipFile = null;
       try {
-        ZipFile zipFile = getExportedFileFromOperation(resourcePath);
+        zipFile = getExportedFileFromOperation(resourcePath);
         Enumeration<? extends ZipEntry> entries = zipFile.entries();
         while (entries.hasMoreElements()) {
           ZipEntry zipEntry = (ZipEntry) entries.nextElement();
@@ -65,10 +65,17 @@ public class ApplicationRegistryConfigurationHandler extends AbstractConfigurati
           }
         }
       } finally {
+        if (zipFile != null) {
+          try {
+            zipFile.close();
+          } catch (Exception e) {
+            // Nothing to do
+          }
+        }
         clearTempFiles();
       }
     }
-    return Utils.writeConfiguration(zos, APPLICATION_REGISTRY_CONFIGURATION_XML,extensionName, externalComponentPlugins);
+    return Utils.writeConfiguration(zos, APPLICATION_REGISTRY_CONFIGURATION_XML, extensionName, externalComponentPlugins);
   }
 
   /**

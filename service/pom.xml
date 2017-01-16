@@ -3,12 +3,17 @@
 	<parent>
 		<groupId>org.exoplatform.addons.generator</groupId>
 		<artifactId>extension-generator-parent</artifactId>
-		<version>1.0.5-SNAPSHOT</version>
+		<version>1.3.x-SNAPSHOT</version>
 	</parent>
 	<artifactId>extension-generator-service</artifactId>
 	<name>Extension Generator - Service</name>
 	<description>eXo Developper Kit - Extension Generator - Service</description>
 	<dependencies>
+		<dependency>
+			<groupId>org.exoplatform.addons.staging</groupId>
+			<artifactId>staging-extension-common</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.exoplatform.addons.staging</groupId>
 			<artifactId>staging-extension-content</artifactId>
@@ -50,6 +55,10 @@
 		<dependency>
 			<groupId>org.exoplatform.ecms</groupId>
 			<artifactId>ecms-core-webui</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.exoplatform.ecms</groupId>
+			<artifactId>ecms-ext-authoring-services</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

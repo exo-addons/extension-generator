@@ -16,7 +16,7 @@ import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
 public class DrivesConfigurationHandler extends AbstractConfigurationHandler {
-  private static final String DRIVE_CONFIGURATION_LOCATION_FROM_EXPORT = "drive/drives-configuration.xml";
+  private static final String DRIVE_CONFIGURATION_LOCATION_FROM_EXPORT = "ecmadmin/drive/drives-configuration.xml";
   private final List<String> configurationPaths = new ArrayList<String>();
 
   private Log log = ExoLogger.getLogger(this.getClass());
@@ -35,17 +35,26 @@ public class DrivesConfigurationHandler extends AbstractConfigurationHandler {
       String driveName = resourcePath.replace(ExtensionGenerator.ECM_DRIVE_PATH + "/", "");
       filterDrives.add(driveName);
     }
+    ZipFile zipFile = null;
     try {
-      ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_DRIVE_PATH, filterDrives.toArray(new String[0]));
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_DRIVE_PATH, filterDrives.toArray(new String[0]));
       ZipEntry drivesConfigurationEntry = zipFile.getEntry(DRIVE_CONFIGURATION_LOCATION_FROM_EXPORT);
+      String drivesConfigurationEntryName = drivesConfigurationEntry.getName().replaceAll("ecmadmin/", "");
       InputStream inputStream = zipFile.getInputStream(drivesConfigurationEntry);
-      Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + drivesConfigurationEntry.getName(), extensionName, inputStream, false);
-      configurationPaths.add(DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + drivesConfigurationEntry.getName());
+      Utils.writeZipEnry(zos, DMS_CONFIGURATION_LOCATION + drivesConfigurationEntryName, extensionName, inputStream, false);
+      configurationPaths.add(DMS_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + drivesConfigurationEntryName);
       return true;
     } catch (Exception e) {
       log.error("Error while serializing drives data", e);
       return false;
     } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception e) {
+          // Nothing to do
+        }
+      }
       clearTempFiles();
     }
   }

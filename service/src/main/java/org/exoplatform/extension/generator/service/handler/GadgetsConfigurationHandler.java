@@ -47,7 +47,10 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
     try {
       String repository = repositoryService.getCurrentRepository().getConfiguration().getName();
 
-      StringBuilder gadgetsConfiguration = new StringBuilder("<gadgets>\r\n");
+      StringBuilder gadgetsConfiguration = new StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+      gadgetsConfiguration.append("<gadgets\r\n\txmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n");
+      gadgetsConfiguration.append("\txsi:schemaLocation=\"http://www.gatein.org/xml/ns/gatein_objects_1_0 http://www.gatein.org/xml/ns/gadgets_1_0\"\r\n");
+      gadgetsConfiguration.append("\txmlns=\"http://www.gatein.org/xml/ns/gadgets_1_0\">\r\n");
       for (String selectedResoucePath : filteredSelectedResources) {
         selectedResoucePath = selectedResoucePath.replace(ExtensionGenerator.GADGET_PATH, "");
         Gadget gadget = gadgetRegistryService.getGadget(selectedResoucePath);
@@ -67,16 +70,22 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
           continue;
         }
         Node gadgetParentNode = gadgetXMLNode.getParent();
-        if (!gadgetParentNode.isNodeType("nt:folder") || gadgetParentNode.getPath().equals("/")) {
-          getLogger().warn("Cannot export Gadget '" + gadget.getName() + "'. Each gadget have to be in a separate folder.");
+        if (gadgetParentNode.getPath().equals("/")) {
+          gadgetsConfiguration.append("\r\n\r\n\t<!-- Gadget '" + gadget.getName() + "' is not exported. Please add it in a separate folder, not under '/' (root folder of the workspace). -->\r\n\r\n");
+          getLogger().warn("Cannot export Gadget '" + gadget.getName() + "'. Each gadget have to be in a separate folder and not under root folder of the workspace.");
+          continue;
+        }
+        if (!gadgetParentNode.isNodeType("nt:folder")) {
+          getLogger().warn("Cannot export Gadget '" + gadget.getName() + "'. Its parent node is not a folder.");
           continue;
         }
 
         String parentPath = gadgetParentNode.getParent().getPath();
 
-        writeFileNode(gadgetParentNode, parentPath, zos, extensionName);
+        writeFileNode(gadgetParentNode, parentPath, zos, extensionName, gadget.getName());
 
-        String xmlPath = GADGETS_LOCATION + "/" + gadgetXMLNode.getPath().replaceFirst(parentPath, "");
+        String xmlPath = GADGETS_LOCATION + "/" + gadgetXMLNode.getPath().replaceFirst(parentPath, gadget.getName());
+        xmlPath = xmlPath.replaceAll("//", "/");
 
         gadgetsConfiguration.append(" <gadget name=\"").append(gadget.getName()).append("\">");
         gadgetsConfiguration.append("\r\n   <path>/").append(xmlPath).append("</path>\r\n");
@@ -91,16 +100,16 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
     }
   }
 
-  private void writeFileNode(Node gadgetFileNode, String parentPath, ZipOutputStream zos, String extensionName) throws Exception {
+  private void writeFileNode(Node gadgetFileNode, String parentPath, ZipOutputStream zos, String extensionName, String gadgetName) throws Exception {
     NodeIterator nodeIterator = gadgetFileNode.getNodes();
     while (nodeIterator.hasNext()) {
       Node node = nodeIterator.nextNode();
       if (node.isNodeType("nt:file")) {
-        String filePath = GADGETS_LOCATION + "/" + node.getPath().replaceFirst(parentPath, "");
-        filePath.replaceAll("//", "/");
+        String filePath = GADGETS_LOCATION + "/" + node.getPath().replaceFirst(parentPath, gadgetName);
+        filePath = filePath.replaceAll("//", "/");
         Utils.writeZipEnry(zos, filePath, extensionName, getContent(node), false);
       } else if (node.isNodeType("nt:folder")) {
-        writeFileNode(node, parentPath, zos, extensionName);
+        writeFileNode(node, parentPath, zos, extensionName, gadgetName);
       }
     }
   }

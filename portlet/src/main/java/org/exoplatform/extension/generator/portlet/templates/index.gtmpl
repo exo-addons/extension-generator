@@ -83,7 +83,6 @@
 										<%=computeContent(userSiteNodes,"usersites", "User Sites",userSitePath)%>
 										<%=computeContent(siteContentNodes,"contentsites", "Site JCR Contents",siteContentPath)%>
 										<%=computeContent(applicationCLVTemplatesNodes,"clv_templates", "Content List Templates",applicationCLVTemplatesPath)%>
-										<%=computeContent(applicationSearchTemplatesNodes,"search_templates", "Search Templates",applicationSearchTemplatesPath)%>
 										<%=computeContent(documentTypeTemplatesNodes,"document_templates", "Document Type templates",documentTypeTemplatesPath)%>
 										<%=computeContent(metadataTemplatesNodes,"metadata_templates", "Metadata Templates",metadataTemplatesPath)%>
 										<%=computeContent(taxonomyNodes,"taxonomy", "Taxonomy",taxonomyPath)%>

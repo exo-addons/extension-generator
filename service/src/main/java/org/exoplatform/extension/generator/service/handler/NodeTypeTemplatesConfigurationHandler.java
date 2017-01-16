@@ -52,8 +52,9 @@ public class NodeTypeTemplatesConfigurationHandler extends AbstractConfiguration
       filterNodeTypes.add(nodeTypeName);
     }
     List<NodeTypeTemplatesMetaData> metaDatas = new ArrayList<NodeTypeTemplatesMetaData>();
+    ZipFile zipFile = null;
     try {
-      ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_TEMPLATES_DOCUMENT_TYPE_PATH, filterNodeTypes.toArray(new String[0]));
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_TEMPLATES_DOCUMENT_TYPE_PATH, filterNodeTypes.toArray(new String[0]));
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       while (entries.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
@@ -75,6 +76,13 @@ public class NodeTypeTemplatesConfigurationHandler extends AbstractConfiguration
         }
       }
     } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception e) {
+          // Nothing to do
+        }
+      }
       clearTempFiles();
     }
 

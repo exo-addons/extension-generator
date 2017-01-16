@@ -35,7 +35,7 @@ public class Utils {
         entryName = entryName.substring(1);
       }
       zos.putNextEntry(new ZipEntry(entryName));
-      zos.write(toXML(configuration));
+      zos.write(toXML(configuration, extensionName));
       zos.closeEntry();
     } catch (Exception e) {
       log.error("Error while writing file " + entryName, e);
@@ -55,7 +55,7 @@ public class Utils {
         entryName = entryName.substring(1);
       }
       zos.putNextEntry(new ZipEntry(entryName));
-      zos.write(toXML(configuration));
+      zos.write(toXML(configuration, extensionName));
       zos.closeEntry();
     } catch (Exception e) {
       log.error("Error while writing file " + entryName, e);
@@ -80,18 +80,27 @@ public class Utils {
       if (targetEntryName.startsWith("/")) {
         targetEntryName = targetEntryName.substring(1);
       }
-      writeZipEnry(zos, targetEntryName, extensionName, zin, true);
+      writeZipEnry(zos, targetEntryName, extensionName, zin, true, false);
     }
     zos.flush();
+    zin.close();
   }
 
   public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, InputStream inputStream, boolean changeContent) throws Exception {
+    writeZipEnry(zos, entryName, extensionName, inputStream, changeContent, true);
+  }
+
+  public static void writeZipEnry(ZipOutputStream zos, String entryName, String extensionName, InputStream inputStream, boolean changeContent, boolean closeInputStream) throws Exception {
+    entryName = entryName.replaceAll("/ecmadmin", "");
     if (changeContent) {
       String content = IOUtils.toString(inputStream);
       writeZipEnry(zos, entryName, extensionName, content, true);
     } else {
       entryName = entryName.replace("custom-extension", extensionName);
       writeZipEnry(zos, entryName, IOUtils.toByteArray(inputStream));
+    }
+    if (closeInputStream) {
+      inputStream.close();
     }
   }
 
@@ -103,7 +112,7 @@ public class Utils {
     writeZipEnry(zos, entryName, content.getBytes("UTF-8"));
   }
 
-  public static byte[] toXML(Object obj) throws Exception {
+  public static byte[] toXML(Object obj, String extensionName) throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     IBindingFactory bfact = BindingDirectory.getFactory(obj.getClass());
     IMarshallingContext mctx = bfact.createMarshallingContext();
@@ -112,6 +121,7 @@ public class Utils {
     String content = new String(out.toByteArray());
     content = content.replace("<configuration>", CONFIGURATION_FILE_XSD);
     content = content.replaceAll("<field name=\"([A-z])*\"/>", "");
+    content = content.replaceAll("custom-extension", extensionName);
     return content.getBytes();
   }
 

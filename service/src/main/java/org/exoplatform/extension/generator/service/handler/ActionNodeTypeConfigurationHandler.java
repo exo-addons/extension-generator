@@ -48,8 +48,9 @@ public class ActionNodeTypeConfigurationHandler extends AbstractConfigurationHan
       String actionTypeName = resourcePath.replace(ExtensionGenerator.ECM_ACTION_PATH + "/", "");
       filterActionTypes.add(actionTypeName);
     }
+    ZipFile zipFile = null;
     try {
-      ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_ACTION_PATH, filterActionTypes.toArray(new String[0]));
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_ACTION_PATH, filterActionTypes.toArray(new String[0]));
       ValuesParam valuesParam = new ValuesParam();
       valuesParam.setName("autoCreatedInNewRepository");
       valuesParam.setValues(new ArrayList<String>());
@@ -61,7 +62,10 @@ public class ActionNodeTypeConfigurationHandler extends AbstractConfigurationHan
       while (entries.hasMoreElements()) {
         ZipEntry zipEntry = (ZipEntry) entries.nextElement();
         String actionTypeConfigurationLocation = JCR_CONFIGURATION_LOCATION + zipEntry.getName();
-        valuesParam.getValues().add(actionTypeConfigurationLocation.replace("WEB-INF", "war:").replace("custom-extension", extensionName));
+
+        String path = actionTypeConfigurationLocation.replace("WEB-INF", "war:").replace("custom-extension", extensionName).replaceAll("/ecmadmin", "");
+
+        valuesParam.getValues().add(path);
         try {
           InputStream inputStream = zipFile.getInputStream(zipEntry);
           Utils.writeZipEnry(zos, actionTypeConfigurationLocation, extensionName, inputStream, false);
@@ -70,6 +74,13 @@ public class ActionNodeTypeConfigurationHandler extends AbstractConfigurationHan
         }
       }
     } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception e) {
+          // Nothing to do
+        }
+      }
       clearTempFiles();
     }
     return Utils.writeConfiguration(zos, JCR_CONFIGURATION_LOCATION + ACTION_CONFIGURATION_NAME, extensionName, externalComponentPlugins);

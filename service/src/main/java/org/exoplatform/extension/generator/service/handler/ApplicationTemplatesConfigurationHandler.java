@@ -43,8 +43,9 @@ public abstract class ApplicationTemplatesConfigurationHandler extends AbstractC
     }
     ApplicationTemplatesMetadata metadata = new ApplicationTemplatesMetadata();
     for (String resourcePath : filteredSelectedResources) {
+      ZipFile zipFile = null;
       try {
-        ZipFile zipFile = getExportedFileFromOperation(resourcePath);
+        zipFile = getExportedFileFromOperation(resourcePath);
         // Compute Metadata
         ApplicationTemplatesMetadata tmpMetadata = getApplicationTemplatesMetadata(zipFile);
         if (tmpMetadata != null) {
@@ -65,6 +66,13 @@ public abstract class ApplicationTemplatesConfigurationHandler extends AbstractC
           }
         }
       } finally {
+        if (zipFile != null) {
+          try {
+            zipFile.close();
+          } catch (Exception e) {
+            // Nothing to do
+          }
+        }
         clearTempFiles();
       }
     }
@@ -83,7 +91,7 @@ public abstract class ApplicationTemplatesConfigurationHandler extends AbstractC
       templateConfig.setCategory(paths[0]);
       templateConfig.setTemplateName(paths[1]);
 
-      String relativePath = selectedResourcePath.replace("/ecmadmin/", "");
+      String relativePath = selectedResourcePath.replaceAll("/ecmadmin/", "");
 
       String templateTitle = templateConfig.getTemplateName();
       if (metadata != null && metadata.getTitle(relativePath) != null) {

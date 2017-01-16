@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -15,7 +14,6 @@ import org.apache.tika.io.IOUtils;
 import org.exoplatform.container.xml.ComponentPlugin;
 import org.exoplatform.container.xml.ExternalComponentPlugins;
 import org.exoplatform.container.xml.InitParams;
-import org.exoplatform.container.xml.ObjectParameter;
 import org.exoplatform.extension.generator.service.api.AbstractConfigurationHandler;
 import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
 import org.exoplatform.extension.generator.service.api.Utils;
@@ -43,56 +41,62 @@ public class SiteExplorerViewConfigurationHandler extends AbstractConfigurationH
     if (filteredSelectedResources.isEmpty()) {
       return false;
     }
-    InitParams allParams = null;
-    // Copy gtmpl in WAR and get all initParams in a single one
-    for (String selectedResource : filteredSelectedResources) {
-      ZipFile zipFile = getExportedFileFromOperation(selectedResource);
-      try {
-        Enumeration<? extends ZipEntry> entries = zipFile.entries();
-        while (entries.hasMoreElements()) {
-          ZipEntry entry = (ZipEntry) entries.nextElement();
-          String filePath = entry.getName();
-          if (!filePath.startsWith("view/")) {
-            continue;
-          }
-          // Skip directories
-          // & Skip empty entries
-          // & Skip entries not in sites/zip
-          if (entry.isDirectory() || filePath.trim().isEmpty() || !(filePath.endsWith(".xml"))) {
-            continue;
-          }
-          InputStream inputStream = zipFile.getInputStream(entry);
-          log.debug("Parsing : " + filePath);
 
-          InitParams initParams = Utils.fromXML(IOUtils.toByteArray(inputStream), InitParams.class);
-          if (allParams == null) {
-            allParams = initParams;
-          } else {
-            @SuppressWarnings("unchecked")
-            Iterator<ObjectParameter> iterator = initParams.getObjectParamIterator();
-            while (iterator.hasNext()) {
-              ObjectParameter objectParameter = (ObjectParameter) iterator.next();
-              allParams.addParameter(objectParameter);
-            }
-          }
-        }
-      } catch (Exception e) {
-        log.error("Error iccured while handling view templates", e);
-        throw new RuntimeException(e);
-      } finally {
-        clearTempFiles();
-      }
+    List<String> filterViews = new ArrayList<String>();
+    for (String resourcePath : filteredSelectedResources) {
+      String viewName = resourcePath.replace(ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH + "/", "");
+      filterViews.add(viewName);
     }
 
-    ExternalComponentPlugins externalComponentPlugins = new ExternalComponentPlugins();
-    // Add constant init params
-    allParams.addParam(getValueParam("autoCreateInNewRepository", "true"));
-    allParams.addParam(getValueParam("predefinedViewsLocation", VIEW_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName)));
+    InitParams allParams = null;
+    // Copy gtmpl in WAR and get all initParams in a single one
+    ZipFile zipFile = null;
+    try {
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_VIEW_CONFIGURATION_PATH, filterViews.toArray(new String[0]));
+      Enumeration<? extends ZipEntry> entries = zipFile.entries();
+      while (entries.hasMoreElements()) {
+        ZipEntry entry = (ZipEntry) entries.nextElement();
+        String filePath = entry.getName();
+        if (!filePath.startsWith("ecmadmin/view/")) {
+          continue;
+        }
+        // Skip directories
+        // & Skip empty entries
+        // & Skip entries not in sites/zip
+        if (entry.isDirectory() || filePath.trim().isEmpty() || !(filePath.endsWith(".xml"))) {
+          continue;
+        }
+        InputStream inputStream = zipFile.getInputStream(entry);
+        if (log.isDebugEnabled()) {
+          log.debug("Parsing : " + filePath);
+        }
 
-    ComponentPlugin plugin = createComponentPlugin("manage.view.plugin", ManageViewPlugin.class.getName(), "setManageViewPlugin", allParams);
-    addComponentPlugin(externalComponentPlugins, ManageViewService.class.getName(), plugin);
+        allParams = Utils.fromXML(IOUtils.toByteArray(inputStream), InitParams.class);
+        break;
+      }
 
-    return Utils.writeConfiguration(zos, VIEW_CONFIGURATION_FULL_PATH, extensionName, externalComponentPlugins);
+      ExternalComponentPlugins externalComponentPlugins = new ExternalComponentPlugins();
+      // Add constant init params
+      allParams.addParam(getValueParam("autoCreateInNewRepository", "true"));
+      allParams.addParam(getValueParam("predefinedViewsLocation", VIEW_CONFIGURATION_LOCATION.replace("WEB-INF", "war:").replace("custom-extension", extensionName)));
+
+      ComponentPlugin plugin = createComponentPlugin("manage.view.plugin", ManageViewPlugin.class.getName(), "setManageViewPlugin", allParams);
+      addComponentPlugin(externalComponentPlugins, ManageViewService.class.getName(), plugin);
+
+      return Utils.writeConfiguration(zos, VIEW_CONFIGURATION_FULL_PATH, extensionName, externalComponentPlugins);
+    } catch (Exception e) {
+      log.error("Error iccured while handling view templates", e);
+      throw new RuntimeException(e);
+    } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception exp) {
+          // Nothing to do
+        }
+      }
+      clearTempFiles();
+    }
   }
 
   @Override

@@ -25,22 +25,6 @@
 		</module>
 	</portlet>
 	<module>
-		<name>jQueryExtensionGeneratorPortlet</name>
-		<script>
-			<path>/js/extensiongenerator/extensiongenerator.js</path>
-		</script>
-		<depends>
-			<module>juzu-ajax</module>
-		</depends>
-		<depends>
-			<module>jquery</module>
-			<as>$</as>
-		</depends>
-		<depends>
-			<module>jQueryDataTable</module>
-		</depends>
-	</module>
-	<module>
 		<name>jQueryDataTable</name>
 		<script>
 			<path>/js/extensiongenerator/jquery.dataTables.js</path>
@@ -48,6 +32,22 @@
 		<depends>
 			<module>jquery</module>
 			<as>jQuery</as>
+		</depends>
+	</module>
+	<module>
+		<name>jQueryExtensionGeneratorPortlet</name>
+		<script>
+			<path>/js/extensiongenerator/extensiongenerator.js</path>
+		</script>
+		<depends>
+			<module>jquery</module>
+			<as>$</as>
+		</depends>
+		<depends>
+			<module>juzu-ajax</module>
+		</depends>
+		<depends>
+			<module>jQueryDataTable</module>
 		</depends>
 	</module>
 </gatein-resources>

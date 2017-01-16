@@ -60,6 +60,7 @@ public class RESTServicesFromIDEConfigurationHandler extends AbstractConfigurati
         String scriptPath = parts[1].substring(1);
 
         String scriptName = scriptPath.substring(scriptPath.lastIndexOf("/") + 1);
+        String scriptParentPath = scriptPath.substring(0, scriptPath.lastIndexOf("/") + 1);
         String scriptPathInArchive = SCRIPTS_CONFIGURATION_LOCATION + "/" + scriptName;
 
         Response response = script2RestLoader.getScript(repository, workspace, scriptPath);
@@ -69,7 +70,7 @@ public class RESTServicesFromIDEConfigurationHandler extends AbstractConfigurati
         scriptPathInArchive = scriptPathInArchive.replace("WEB-INF", "war:");
 
         InitParams scriptInitParams = new InitParams();
-        scriptInitParams.addParameter(getValueParam("node", "/" + scriptPath));
+        scriptInitParams.addParameter(getValueParam("node", "/" + scriptParentPath));
         scriptInitParams.addParameter(getValueParam("workspace", workspace));
         PropertiesParam propertiesParam = new PropertiesParam();
         propertiesParam.setName(scriptName);

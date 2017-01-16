@@ -42,7 +42,7 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
   private static final String JCR_CONFIGURATION_NAME = "jcr-component-plugins-configuration.xml";
   private static final String JCR_CONFIGURATION_LOCATION = "WEB-INF/conf/custom-extension/jcr/";
   private static final String NODETYPE_CONFIGURATION_LOCATION = JCR_CONFIGURATION_LOCATION + "nodetypes.xml";
-  private static final String JCR_NAMESPACES_CONFIGURATION_XML = "nodetype/jcr-namespaces-configuration.xml";
+  private static final String JCR_NAMESPACES_CONFIGURATION_XML = "ecmadmin/nodetype/jcr-namespaces-configuration.xml";
   private static final List<String> configurationPaths = new ArrayList<String>();
   static {
     configurationPaths.add(JCR_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + JCR_CONFIGURATION_NAME);
@@ -76,8 +76,9 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
       String nodeTypeName = resourcePath.replace(ExtensionGenerator.ECM_NODETYPE_PATH + "/", "");
       filterNodeTypes.add(nodeTypeName);
     }
+    ZipFile zipFile = null;
     try {
-      ZipFile zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_NODETYPE_PATH, filterNodeTypes.toArray(new String[0]));
+      zipFile = getExportedFileFromOperation(ExtensionGenerator.ECM_NODETYPE_PATH, filterNodeTypes.toArray(new String[0]));
       ZipEntry namespaceConfigurationEntry = zipFile.getEntry(JCR_NAMESPACES_CONFIGURATION_XML);
       try {
         InputStream inputStream = zipFile.getInputStream(namespaceConfigurationEntry);
@@ -140,6 +141,13 @@ public class NodeTypeConfigurationHandler extends AbstractConfigurationHandler {
       log.error("Error while serializing MOP data", e);
       return false;
     } finally {
+      if (zipFile != null) {
+        try {
+          zipFile.close();
+        } catch (Exception e) {
+          // nothing to do
+        }
+      }
       clearTempFiles();
     }
     return Utils.writeConfiguration(zos, JCR_CONFIGURATION_LOCATION + JCR_CONFIGURATION_NAME, extensionName, externalComponentPlugins);
