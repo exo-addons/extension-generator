@@ -5,10 +5,10 @@
 		<artifactId>extension-generator-parent</artifactId>
 		<version>1.4.x-SNAPSHOT</version>
 	</parent>
-	<artifactId>extension-generator-tomcat</artifactId>
+	<artifactId>extension-generator-packaging</artifactId>
 	<packaging>pom</packaging>
-	<name>Extension Generator - Tomcat packaging</name>
-	<description>eXo Developper Kit - Extension Generator - Tomcat packaging</description>
+	<name>Extension Generator - packaging</name>
+	<description>eXo Developper Kit - Extension Generator - packaging</description>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -93,7 +93,6 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<finalName>extension-generator</finalName>
 							<appendAssemblyId>false</appendAssemblyId>
 							<descriptors>
 								<descriptor>src/main/assemblies/extension-generator.xml</descriptor>

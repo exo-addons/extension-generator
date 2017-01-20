@@ -2,7 +2,7 @@
 	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-	<id>extension-generator</id>
+	<id>packaging</id>
 	<formats>
 		<format>zip</format>
 	</formats>
@@ -11,14 +11,15 @@
 		<dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
 			<outputDirectory>lib</outputDirectory>
-			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+			<!-- outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping -->
 			<includes>
-				<include>org.exoplatform.addons.staging:staging-extension-*:jar</include>
+				<!-- include>org.exoplatform.addons.staging:staging-extension-*:jar</include -->
 				<include>${project.groupId}:extension-generator-service:jar</include>
 			</includes>
-			<scope>provided</scope>
+      <scope>provided</scope>
+      <fileMode>0644</fileMode>
 		</dependencySet>
-		<dependencySet>
+		<!-- dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
 			<outputDirectory>lib</outputDirectory>
 			<outputFileNameMapping>${artifact.artifactId}-1.1.0.Final.${artifact.extension}</outputFileNameMapping>
@@ -26,7 +27,7 @@
 				<include>org.gatein.management:gatein-management-*:jar</include>
 			</includes>
 			<scope>provided</scope>
-		</dependencySet>
+		</dependencySet -->
 		<dependencySet>
 			<useProjectArtifact>false</useProjectArtifact>
 			<outputDirectory>webapps</outputDirectory>
@@ -34,7 +35,8 @@
 			<includes>
 				<include>${project.groupId}:extension-generator-portlet:war</include>
 			</includes>
-			<scope>provided</scope>
+      <scope>provided</scope>
+      <fileMode>0644</fileMode>
 		</dependencySet>
 	</dependencySets>
 </assembly>
