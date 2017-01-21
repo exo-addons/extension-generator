@@ -1,13 +1,22 @@
+/*
+ * Copyright (C) 2003-2017 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.exoplatform.extension.generator.service.handler;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.zip.ZipOutputStream;
-
-import javax.ws.rs.core.Response;
 
 import org.exoplatform.container.PortalContainer;
 import org.exoplatform.container.xml.ComponentPlugin;
@@ -23,15 +32,36 @@ import org.exoplatform.services.jcr.ext.script.groovy.GroovyScript2RestLoaderPlu
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipOutputStream;
+
+import javax.ws.rs.core.Response;
+
+/**
+ * The Class RESTServicesFromIDEConfigurationHandler.
+ */
 public class RESTServicesFromIDEConfigurationHandler extends AbstractConfigurationHandler {
+  
+  /** The Constant CONFIGURATION_LOCATION. */
   protected static final String CONFIGURATION_LOCATION = "WEB-INF/conf/custom-extension/rest";
+  
+  /** The Constant SCRIPTS_CONFIGURATION_LOCATION. */
   protected static final String SCRIPTS_CONFIGURATION_LOCATION = "WEB-INF/conf/custom-extension/rest/scripts";
+  
+  /** The Constant CONFIGURATION_NAME. */
   private static final String CONFIGURATION_NAME = "rest-groovy-configuration.xml";
+  
+  /** The Constant configurationPaths. */
   private static final List<String> configurationPaths = new ArrayList<String>();
   static {
     configurationPaths.add(CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + "/" + CONFIGURATION_NAME);
   }
 
+  /** The log. */
   private Log log = ExoLogger.getLogger(this.getClass());
 
   /**
@@ -97,6 +127,9 @@ public class RESTServicesFromIDEConfigurationHandler extends AbstractConfigurati
     return configurationPaths;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected Log getLogger() {
     return log;

@@ -1,4 +1,28 @@
+/*
+ * Copyright (C) 2003-2017 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.exoplatform.extension.generator.service.handler;
+
+import org.exoplatform.extension.generator.service.api.AbstractConfigurationHandler;
+import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
+import org.exoplatform.extension.generator.service.api.Utils;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -9,16 +33,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.exoplatform.extension.generator.service.api.AbstractConfigurationHandler;
-import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
-import org.exoplatform.extension.generator.service.api.Utils;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-
+/**
+ * The Class DrivesConfigurationHandler.
+ */
 public class DrivesConfigurationHandler extends AbstractConfigurationHandler {
+  
+  /** The Constant DRIVE_CONFIGURATION_LOCATION_FROM_EXPORT. */
   private static final String DRIVE_CONFIGURATION_LOCATION_FROM_EXPORT = "ecmadmin/drive/drives-configuration.xml";
+  
+  /** The configuration paths. */
   private final List<String> configurationPaths = new ArrayList<String>();
 
+  /** The log. */
   private Log log = ExoLogger.getLogger(this.getClass());
 
   /**
@@ -67,6 +93,9 @@ public class DrivesConfigurationHandler extends AbstractConfigurationHandler {
     return log;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<String> getConfigurationPaths() {
     return configurationPaths;

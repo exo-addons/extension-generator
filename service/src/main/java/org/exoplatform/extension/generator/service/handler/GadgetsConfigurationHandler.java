@@ -1,15 +1,22 @@
+/*
+ * Copyright (C) 2003-2017 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.exoplatform.extension.generator.service.handler;
-
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.zip.ZipOutputStream;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.Session;
 
 import org.exoplatform.application.gadget.Gadget;
 import org.exoplatform.application.gadget.GadgetRegistryService;
@@ -23,13 +30,35 @@ import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.zip.ZipOutputStream;
+
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Session;
+
+/**
+ * The Class GadgetsConfigurationHandler.
+ */
 public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
+  
+  /** The Constant GADGETS_LOCATION. */
   protected static final String GADGETS_LOCATION = "gadgets";
+  
+  /** The Constant GADGETS_CONFIGURATION_PATH. */
   private static final String GADGETS_CONFIGURATION_PATH = "WEB-INF/gadget.xml";
 
+  /** The repository service. */
   private RepositoryService repositoryService;
+  
+  /** The gadget registry service. */
   private GadgetRegistryService gadgetRegistryService;
 
+  /** The log. */
   private Log log = ExoLogger.getLogger(this.getClass());
 
   /**
@@ -100,6 +129,16 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
     }
   }
 
+  /**
+   * Write file node.
+   *
+   * @param gadgetFileNode the gadget file node
+   * @param parentPath the parent path
+   * @param zos the zos
+   * @param extensionName the extension name
+   * @param gadgetName the gadget name
+   * @throws Exception the exception
+   */
   private void writeFileNode(Node gadgetFileNode, String parentPath, ZipOutputStream zos, String extensionName, String gadgetName) throws Exception {
     NodeIterator nodeIterator = gadgetFileNode.getNodes();
     while (nodeIterator.hasNext()) {
@@ -114,6 +153,13 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
     }
   }
 
+  /**
+   * Gets the content.
+   *
+   * @param node the node
+   * @return the content
+   * @throws Exception the exception
+   */
   private InputStream getContent(Node node) throws Exception {
     return node.getNode("jcr:content").getProperty("jcr:data").getStream();
   }
@@ -126,11 +172,21 @@ public class GadgetsConfigurationHandler extends AbstractConfigurationHandler {
     return Collections.emptyList();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected Log getLogger() {
     return log;
   }
 
+  /**
+   * Gets the session.
+   *
+   * @param workspace the workspace
+   * @return the session
+   * @throws Exception the exception
+   */
   private Session getSession(String workspace) throws Exception {
     SessionProvider provider = SessionProvider.createSystemProvider();
     ManageableRepository repository = repositoryService.getCurrentRepository();

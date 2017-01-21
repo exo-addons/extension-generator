@@ -1,26 +1,22 @@
+/*
+ * Copyright (C) 2003-2017 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.exoplatform.extension.generator.service;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
-
-import javax.inject.Singleton;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
 import org.exoplatform.application.gadget.Gadget;
@@ -36,7 +32,6 @@ import org.exoplatform.extension.generator.service.api.ConfigurationHandler;
 import org.exoplatform.extension.generator.service.api.ExtensionGenerator;
 import org.exoplatform.extension.generator.service.api.Node;
 import org.exoplatform.extension.generator.service.api.Utils;
-import org.exoplatform.extension.generator.service.handler.ActionNodeTypeConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.ApplicationRegistryConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.CLVTemplatesConfigurationHandler;
 import org.exoplatform.extension.generator.service.handler.DrivesConfigurationHandler;
@@ -68,20 +63,58 @@ import org.gatein.management.api.operation.OperationNames;
 import org.gatein.management.api.operation.model.ReadResourceModel;
 import org.picocontainer.ComponentAdapter;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import javax.inject.Singleton;
+import javax.ws.rs.core.Response;
+
+/**
+ * The Class ExtensionGeneratorImpl.
+ */
 @Singleton
 public class ExtensionGeneratorImpl implements ExtensionGenerator {
+  
+  /** The Constant WEB_XML_LOCATION. */
   private static final String WEB_XML_LOCATION = "WEB-INF/web.xml";
+  
+  /** The Constant WEB_XML_TEMPLATE_LOCATION. */
   private static final String WEB_XML_TEMPLATE_LOCATION = "generator/template/web.xml";
+  
+  /** The Constant CONFIGURATION_XML_LOCATION. */
   private static final String CONFIGURATION_XML_LOCATION = "WEB-INF/conf/configuration.xml";
 
+  /** The Constant log. */
   private static final Log log = ExoLogger.getLogger(ExtensionGeneratorImpl.class);
 
+  /** The management controller. */
   private ManagementController managementController = null;
 
+  /** The handlers. */
   private List<ConfigurationHandler> handlers = new ArrayList<ConfigurationHandler>();
 
+  /**
+   * Instantiates a new extension generator impl.
+   */
   public ExtensionGeneratorImpl() {
-    handlers.add(new ActionNodeTypeConfigurationHandler());
+    // TODO /ecmadmin/action not used for PLF 4.3+
+    //handlers.add(new ActionNodeTypeConfigurationHandler());
     handlers.add(new NodeTypeConfigurationHandler());
     handlers.add(new ApplicationRegistryConfigurationHandler());
     handlers.add(new MOPSiteConfigurationHandler(SiteType.PORTAL));
@@ -193,8 +226,11 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
    * {@inheritDoc}
    */
   @Override
+  @Deprecated
   public List<Node> getActionNodeTypeNodes() {
-    return getNodes(ECM_ACTION_PATH);
+    // TODO /ecmadmin/action not used for PLF 4.3+
+    //return getNodes(ECM_ACTION_PATH);
+    return Collections.emptyList();
   }
 
   /**
@@ -381,6 +417,9 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     return new ClosableFileInputStream(file);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Set<String> filterSelectedResources(Collection<String> selectedResources, String parentPath) {
     Set<String> filteredSelectedResources = new HashSet<String>();
@@ -392,6 +431,13 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     return filteredSelectedResources;
   }
 
+  /**
+   * Generate actiovation jar.
+   *
+   * @param extensionName the extension name
+   * @return the input stream
+   * @throws Exception the exception
+   */
   private InputStream generateActiovationJar(String extensionName) throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ZipOutputStream zos = new ZipOutputStream(out);
@@ -402,6 +448,12 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     return new ByteArrayInputStream(out.toByteArray());
   }
 
+  /**
+   * Gets the nodes.
+   *
+   * @param path the path
+   * @return the nodes
+   */
   private List<Node> getNodes(String path) {
     ManagedRequest request = ManagedRequest.Factory.create(OperationNames.READ_RESOURCE, PathAddress.pathAddress(path), ContentType.JSON);
     ManagedResponse response = getManagementController().execute(request);
@@ -426,6 +478,11 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     return children;
   }
 
+  /**
+   * Gets the predefined scripts.
+   *
+   * @return the predefined scripts
+   */
   private Set<String> getPredefinedScripts() {
     Set<String> predefinedScripts = new HashSet<String>();
     addPredefinedScriptsForComponent(predefinedScripts, GroovyScript2RestLoader.class.getName());
@@ -433,6 +490,12 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     return predefinedScripts;
   }
 
+  /**
+   * Adds the predefined scripts for component.
+   *
+   * @param predefinedScripts the predefined scripts
+   * @param groovyScript2RestLoaderClassName the groovy script 2 rest loader class name
+   */
   private void addPredefinedScriptsForComponent(Set<String> predefinedScripts, String groovyScript2RestLoaderClassName) {
     ConfigurationManager configurationManager = (ConfigurationManager) PortalContainer.getInstance().getComponentInstanceOfType(ConfigurationManager.class);
     Class<?> groovyScript2RestLoaderClass = null;
@@ -463,6 +526,12 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     }
   }
 
+  /**
+   * Adds the predefined scripts.
+   *
+   * @param predefinedScripts the predefined scripts
+   * @param componentPlugins the component plugins
+   */
   private void addPredefinedScripts(Set<String> predefinedScripts, List<ComponentPlugin> componentPlugins) {
     if (componentPlugins == null || componentPlugins.isEmpty()) {
       return;
@@ -480,6 +549,11 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     }
   }
 
+  /**
+   * Gets the management controller.
+   *
+   * @return the management controller
+   */
   private ManagementController getManagementController() {
     if (managementController == null) {
       managementController = (ManagementController) PortalContainer.getInstance().getComponentInstanceOfType(ManagementController.class);
@@ -487,14 +561,28 @@ public class ExtensionGeneratorImpl implements ExtensionGenerator {
     return managementController;
   }
 
+  /**
+   * The Class ClosableFileInputStream.
+   */
   public static class ClosableFileInputStream extends FileInputStream {
+    
+    /** The file. */
     File file;
 
+    /**
+     * Instantiates a new closable file input stream.
+     *
+     * @param file the file
+     * @throws FileNotFoundException the file not found exception
+     */
     public ClosableFileInputStream(File file) throws FileNotFoundException {
       super(file);
       this.file = file;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() throws IOException {
       super.close();

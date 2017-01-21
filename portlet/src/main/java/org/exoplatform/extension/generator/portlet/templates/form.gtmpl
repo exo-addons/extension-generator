@@ -31,7 +31,8 @@
 	  addSelectedContent(querySelectedNodes, "querySelectedResources", "All JCR Queries");
 	  addSelectedContent(driveSelectedNodes, "driveSelectedResources", "Drives");
 	  addSelectedContent(scriptSelectedNodes, "scriptSelectedResources", "ECMS Scripts");
-	  addSelectedContent(actionNodeTypeSelectedNodes, "actionNodeTypeSelectedResources", "Action NodeTypes");
+	  // TODO /ecmadmin/action not used for PLF 4.3+
+	  //addSelectedContent(actionNodeTypeSelectedNodes, "actionNodeTypeSelectedResources", "Action NodeTypes");
 	  addSelectedContent(nodeTypeSelectedNodes, "nodeTypeSelectedResources", "NodeTypes");
 	  addSelectedContent(registrySelectedNodes, "registrySelectedResources", "Application Registry Categories");
 	  addSelectedContent(viewTemplateSelectedNodes, "viewTemplatesSelectedResources", "View Templates");

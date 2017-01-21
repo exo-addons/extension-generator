@@ -1,26 +1,24 @@
+/*
+ * Copyright (C) 2003-2017 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.exoplatform.extension.generator.service.handler;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
-import javax.jcr.nodetype.NodeType;
-import javax.jcr.nodetype.PropertyDefinition;
+import com.thoughtworks.xstream.XStream;
 
 import org.apache.commons.lang.StringUtils;
 import org.exoplatform.container.PortalContainer;
@@ -51,23 +49,66 @@ import org.exoplatform.services.jcr.ext.common.SessionProvider;
 import org.exoplatform.services.log.ExoLogger;
 import org.exoplatform.services.log.Log;
 
-import com.thoughtworks.xstream.XStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.Value;
+import javax.jcr.nodetype.NodeType;
+import javax.jcr.nodetype.PropertyDefinition;
+
+/**
+ * The Class TaxonomyConfigurationHandler.
+ */
 public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
+  
+  /** The Constant EXO_TAXONOMY. */
   private static final String EXO_TAXONOMY = "exo:taxonomy";
+  
+  /** The Constant EXO_TAXONOMY_ACTION. */
   private static final String EXO_TAXONOMY_ACTION = "exo:taxonomyAction";
+  
+  /** The Constant WCM_TAXONOMY_CONFIGURATION_LOCATION. */
   private static final String WCM_TAXONOMY_CONFIGURATION_LOCATION = "WEB-INF/conf/custom-extension/wcm/";
+  
+  /** The Constant WCM_TAXONOMY_CONFIGURATION_NAME. */
   private static final String WCM_TAXONOMY_CONFIGURATION_NAME = "taxonomy-configuration.xml";
+  
+  /** The Constant configurationPaths. */
   private static final List<String> configurationPaths = new ArrayList<String>();
   static {
     configurationPaths.add(WCM_TAXONOMY_CONFIGURATION_LOCATION.replace("WEB-INF", "war:") + WCM_TAXONOMY_CONFIGURATION_NAME);
   }
+  
+  /** The link manager. */
   private static LinkManager linkManager = null;
+  
+  /** The repository service. */
   private static RepositoryService repositoryService = null;
+  
+  /** The action service container. */
   private static ActionServiceContainer actionServiceContainer = null;
 
+  /** The log. */
   private Log log = ExoLogger.getLogger(this.getClass());
 
+  /**
+   * Instantiates a new taxonomy configuration handler.
+   */
   public TaxonomyConfigurationHandler() {
     linkManager = (LinkManager) PortalContainer.getInstance().getComponentInstanceOfType(LinkManager.class);
     repositoryService = (RepositoryService) PortalContainer.getInstance().getComponentInstanceOfType(RepositoryService.class);
@@ -195,6 +236,13 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     return Utils.writeConfiguration(zos, WCM_TAXONOMY_CONFIGURATION_LOCATION + WCM_TAXONOMY_CONFIGURATION_NAME, extensionName, taxonomyExternalComponentPlugin, linkExternalComponentPlugin);
   }
 
+  /**
+   * Gets the sym links from tree node.
+   *
+   * @param treeHomePath the tree home path
+   * @param treeWorkspace the tree workspace
+   * @return the sym links from tree node
+   */
   private List<LinkDeploymentDescriptor> getSymLinksFromTreeNode(String treeHomePath, String treeWorkspace) {
     SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     List<LinkDeploymentDescriptor> descriptors = new ArrayList<LinkDeploymentDescriptor>();
@@ -212,6 +260,15 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     return descriptors;
   }
 
+  /**
+   * Compute link tree nodes.
+   *
+   * @param repository the repository
+   * @param workspace the workspace
+   * @param descriptors the descriptors
+   * @param rootNode the root node
+   * @throws Exception the exception
+   */
   private void computeLinkTreeNodes(String repository, String workspace, List<LinkDeploymentDescriptor> descriptors, Node rootNode) throws Exception {
     NodeIterator nodeIterator = rootNode.getNodes();
     while (nodeIterator.hasNext()) {
@@ -227,6 +284,14 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     }
   }
 
+  /**
+   * Gets the taxonomy tree nodes.
+   *
+   * @param treeHomePath the tree home path
+   * @param treeWorkspace the tree workspace
+   * @return the taxonomy tree nodes
+   * @throws Exception the exception
+   */
   private List<Taxonomy> getTaxonomyTreeNodes(String treeHomePath, String treeWorkspace) throws Exception {
     SessionProvider sessionProvider = SessionProvider.createSystemProvider();
     List<Taxonomy> taxonomies = new ArrayList<Taxonomy>();
@@ -243,6 +308,14 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     return taxonomies;
   }
 
+  /**
+   * Compute taxonomy tree nodes.
+   *
+   * @param taxonomies the taxonomies
+   * @param rootNode the root node
+   * @param rootPath the root path
+   * @throws Exception the exception
+   */
   private void computeTaxonomyTreeNodes(List<Taxonomy> taxonomies, Node rootNode, String rootPath) throws Exception {
     NodeIterator nodeIterator = rootNode.getNodes();
     while (nodeIterator.hasNext()) {
@@ -271,11 +344,21 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     return configurationPaths;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected Log getLogger() {
     return log;
   }
 
+  /**
+   * Gets the actions.
+   *
+   * @param rootNodePath the root node path
+   * @param workspaceName the workspace name
+   * @return the actions
+   */
   @SuppressWarnings("unchecked")
   private List<ActionConfig.TaxonomyAction> getActions(String rootNodePath, String workspaceName) {
     List<ActionConfig.TaxonomyAction> taxonomyActions = new ArrayList<ActionConfig.TaxonomyAction>();
@@ -337,6 +420,14 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     return taxonomyActions;
   }
 
+  /**
+   * Gets the properties.
+   *
+   * @param node the node
+   * @param mixinType the mixin type
+   * @return the properties
+   * @throws RepositoryException the repository exception
+   */
   private String getProperties(Node node, NodeType mixinType) throws RepositoryException {
     StringBuilder builder = new StringBuilder();
     PropertyDefinition[] propertyDefinitions = mixinType.getPropertyDefinitions();
@@ -358,6 +449,14 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     return builder.toString();
   }
 
+  /**
+   * Gets the property.
+   *
+   * @param node the node
+   * @param propertyName the property name
+   * @return the property
+   * @throws RepositoryException the repository exception
+   */
   private String getProperty(Node node, String propertyName) throws RepositoryException {
     if (propertyName != null && node != null && node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getString();
@@ -366,6 +465,14 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     }
   }
 
+  /**
+   * Gets the property values.
+   *
+   * @param node the node
+   * @param propertyName the property name
+   * @return the property values
+   * @throws RepositoryException the repository exception
+   */
   private List<String> getPropertyValues(Node node, String propertyName) throws RepositoryException {
     if (propertyName != null && node != null && node.hasProperty(propertyName)) {
       Value[] values = node.getProperty(propertyName).getValues();
@@ -381,6 +488,12 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     }
   }
 
+  /**
+   * Gets the permissions.
+   *
+   * @param aclEntries the acl entries
+   * @return the permissions
+   */
   private List<Permission> getPermissions(List<AccessControlEntry> aclEntries) {
     List<TaxonomyConfig.Permission> listPermissions = new ArrayList<TaxonomyConfig.Permission>();
     Map<String, List<String>> permissionsMap = new HashMap<String, List<String>>();
@@ -404,6 +517,12 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     return listPermissions;
   }
 
+  /**
+   * Gets the permissions.
+   *
+   * @param permissions the permissions
+   * @return the permissions
+   */
   private List<Permission> getPermissions(String permissions) {
     List<TaxonomyConfig.Permission> listPermissions = new ArrayList<TaxonomyConfig.Permission>();
     if (permissions == null || permissions.trim().isEmpty()) {
@@ -433,6 +552,13 @@ public class TaxonomyConfigurationHandler extends AbstractConfigurationHandler {
     return listPermissions;
   }
 
+  /**
+   * Checks if is sym link.
+   *
+   * @param node the node
+   * @return true, if is sym link
+   * @throws RepositoryException the repository exception
+   */
   public static boolean isSymLink(Node node) throws RepositoryException {
     return linkManager.isLink(node);
   }

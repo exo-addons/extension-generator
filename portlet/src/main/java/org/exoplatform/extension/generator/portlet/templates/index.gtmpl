@@ -89,7 +89,8 @@
 										<%=computeContent(queryNodes,"jcrquery", "JCR Query",queryPath)%>
 										<%=computeContent(driveNodes,"drives", "Drives",drivePath)%>
 										<%=computeContent(scriptNodes,"scripts", "Programming Groovy Script",scriptPath)%>
-										<%=computeContent(actionNodeTypeNodes,"actions", "Action JCR NodeType",actionNodeTypePath)%>
+										<!-- TODO /ecmadmin/action not used for PLF 4.3+ -->
+										<!-- %=computeContent(actionNodeTypeNodes,"actions", "Action JCR NodeType",actionNodeTypePath)% --> 
 										<%=computeContent(nodeTypeNodes,"nodetypes", "JCR NodeType",nodeTypePath)%>
 										<%=computeContent(registryNodes,"registry", "Application Registry",registryPath)%>
 										<%=computeContent(viewTemplateNodes,"viewTemplate", "Sites Explorer View Templates",viewTemplatePath)%>
