@@ -79,7 +79,7 @@
 			background-color: #f0f0f0;
 		}
 
-		.expandIcon {
+		.expandIcon, .emptyIcon {
 			width: auto;
 			height: auto;
 			padding-left: 30px;
@@ -87,7 +87,7 @@
 			text-transform: capitalize;
 		}
 		
-		.expandIcon:before {
+		.expandIcon:before, .emptyIcon:before {
 			content: "";
 		}
 
@@ -97,6 +97,10 @@
 
 		.tree-checkbox:checked + .expandIcon {
 			background: transparent url("/extension-generator-portlet/style/images/uiIconTreeMinus.gif") no-repeat 17px 6px;
+		}
+		
+		.uiCheckbox + .emptyIcon {
+			background: transparent url("/extension-generator-portlet/style/images/uiIconTreeSquare.gif") no-repeat 17px 6px;
 		}
 
 		.sorting_disabled {
@@ -152,15 +156,8 @@
 				overflow: hidden;
 			}
 
-			.emptyIcon {
-				background-position: 0px 6px;
-			}
-
 			.node {
 				width: 285px;
-				.uiCheckbox + div {
-					margin-left: 18px;
-				}
 
 				.uiSearchInput {
 					margin: 0 0 8px 20px;

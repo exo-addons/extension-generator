@@ -1,62 +1,62 @@
 <%
   public String computeContent(def tmpNodes, def name, def title, def parentPath) {
-    String content = "<li class='node'>";
-    
+    String content = "<li class='node'>"
     content += "<span class='uiCheckbox '>"
-    content += "<input type='checkbox' class='list-checkbox parent' name='selectedResources' id='"+parentPath+"' value='"+parentPath+"'>";
-    content += "<span></span>";
-    content += "</span>";
+    content += "<input type='checkbox' class='list-checkbox parent' name='selectedResources' id='"+parentPath+"' value='"+parentPath+"'>"
+    content += "<span></span>"
+    content += "</span>"
     
-    def parentNodeClass = "expandIcon";
-    def parentLabelFor = "tree_"+parentPath;
-    if(tmpNodes.size() == 0 || (tmpNodes.size() == 1 && tmpNodes.iterator().next().getPath().equals(parentPath))) {
-      parentNodeClass = "emptyIcon";
-      parentLabelFor = parentPath;
+    def isExpandIcon
+    def parentNodeClass
+    def parentLabelFor
+    if (tmpNodes.size() == 0 || (tmpNodes.size() == 1 && tmpNodes.iterator().next().getPath().equals(parentPath))) {
+      isExpandIcon = false
+      parentNodeClass = "emptyIcon"
+      parentLabelFor = parentPath
     } else {
-      content += "<input type='checkbox' class='tree-checkbox' id='tree_"+parentPath+"'>";
+      isExpandIcon = true
+      parentLabelFor = "tree_"+parentPath
+      parentNodeClass = "expandIcon"
+      content += "<input type='checkbox' class='tree-checkbox' id='tree_"+parentPath+"'>"
     }
+    
+  	content += "<div class='"+parentNodeClass+" '>"
+    content += "	<div>"
+  	content += "		<a data-placement='bottom' rel='tooltip' data-original-title='mobile'>"
+  	content += "			<i class='uiIcon16x16FolderDefault uiIcon16x16exo_portalFolder' title='"+title+"'></i>"
+  	content += "			<label class='nodeName Clickable' for='"+parentLabelFor+"'>"+title+"</label>"
+  	content += "		</a>"
+  	content += "	</div>"
+  	content += "</div>"
 
-  	content += "<div class='"+parentNodeClass+" '>";
-  	content += "   <div>";
-  	content += "        <a data-placement='bottom' rel='tooltip' data-original-title='mobile'>";
-  	content += "         <i class='uiIcon16x16FolderDefault uiIcon16x16exo_portalFolder' title='"+title+"'></i>";
-  	content += "         <label class='nodeName Clickable' for='"+parentLabelFor+"'>"+title+"</label>";
-  	content += "		</a>";
-  	content += "	</div>";
-  	content += "</div>";
-
-    if(parentNodeClass == "expandIcon") {
-
-	  content += "<ul class='nodeGroup'>";
-	  content += "	<li class='node uiSearchInput'>";
-
-      content += "<table cellpadding='0' cellspacing='0' border='0' class='display dataTable tree_datatable' id='"+name+"'>";
-      content += "<tbody>";
+  	if (isExpandIcon) {
+		  content += "<ul class='nodeGroup'>"
+		  content += "	<li class='node uiSearchInput'>"
+      content += "<table cellpadding='0' cellspacing='0' border='0' class='display dataTable tree_datatable' id='"+name+"'>"
+      content += "<tbody>"
       tmpNodes.each { node ->
         if(!node.getPath().equals(parentPath)) {
-          content += "<tr class='rowTable gradeA'>";
-          content += " <td class='gradeA'>";
-          content += "  <span class='uiCheckbox '>";
-          content += "    <input type='checkbox' class='list-checkbox leaf' name='selectedResources' id='"+node.getPath()+"' value='"+node.getPath()+"'>";
-          content += "    <span></span>";
-          content += "  </span>";
-          content += "  <a data-placement='bottom' rel='tooltip'>";
-          content += "    <i class='uiIconFileMini uiIconLightgray' title='"+node.getDescription()+"'></i>";
-          content += "    <label title='"+node.getDescription()+"' class='leaf nodeName Clickable' for='"+node.getPath()+"'>"+node.getText()+"</label>";
-          content += "  </a>";
-          content += " </td>";
-          content += "</tr>";
+          content += "<tr class='rowTable gradeA'>"
+          content += " <td class='gradeA'>"
+          content += "  <span class='uiCheckbox '>"
+          content += "    <input type='checkbox' class='list-checkbox leaf' name='selectedResources' id='"+node.getPath()+"' value='"+node.getPath()+"'>"
+          content += "    <span></span>"
+          content += "  </span>"
+          content += "  <a data-placement='bottom' rel='tooltip'>"
+          content += "    <i class='uiIconFileMini uiIconLightgray' title='"+node.getDescription()+"'></i>"
+          content += "    <label title='"+node.getDescription()+"' class='leaf nodeName Clickable' for='"+node.getPath()+"'>"+node.getText()+"</label>"
+          content += "  </a>"
+          content += " </td>"
+          content += "</tr>"
         }
       }
-      content += "</tbody>";
-      content += "</table>";
-      content += "</li>";
-      content += "</ul>";
-      content += "</li>";
-    } else {
-		
-	}
-    return content;
+      content += "</tbody>"
+      content += "</table>"
+      content += "</li>"
+      content += "</ul>"
+      content += "</li>"
+    }
+    return content
   }
 %>
 <div id="extension-genrator-portlet" class="wrapper">
