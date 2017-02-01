@@ -26,7 +26,7 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <org.exoplatform.addons.staging.version>2.6.x-SNAPSHOT</org.exoplatform.addons.staging.version>
+    <org.exoplatform.addons.staging.version>2.6.0</org.exoplatform.addons.staging.version>
   </properties>
   <dependencyManagement>
     <dependencies>
