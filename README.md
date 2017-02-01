@@ -8,6 +8,7 @@ http://community.exoplatform.com/portal/g/:spaces:configuration_generator/extens
 
 Note: Join the community space to see the documentation.
 
+### Changes in version 2.6 (for eXo Platform 4.4.+)
 Extension Generator depends on another add-on, the Staging extension. Prior version 2.6 it was bundled  inside the Extension Generator packaging, but since 2.6 need install the required add-on explicitly. Version 2.6 compartible with Platform 4.4. To install the add-on to this Platform version and above use following commands sequence:
 
      > ./addon install exo-staging-extension
